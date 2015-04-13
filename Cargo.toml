@@ -14,3 +14,9 @@ homepage = "https://github.com/pistondevelopers/piston_window"
 
 path = "src/lib.rs"
 name = "piston_window"
+
+[dependencies.pistoncore-glutin_window]
+git = "https://github.com/pistondevelopers/glutin_window"
+
+[dependencies.piston]
+git = "https://github.com/pistondevelopers/piston"
