@@ -44,8 +44,8 @@ impl<T> PistonWindow<T> {
     /// Changes application structure.
     pub fn app<U>(self, app: Rc<RefCell<U>>) -> PistonWindow<U> {
         PistonWindow {
-            window: self.window.clone(),
-            events: self.events.clone(),
+            window: self.window,
+            events: self.events,
             event: self.event,
             app: app,
         }
