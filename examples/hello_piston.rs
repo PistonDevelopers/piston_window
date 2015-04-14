@@ -20,7 +20,7 @@ fn main() {
             Size { width: 640, height: 480 })
             .exit_on_esc(true)
     )));
-    println!("Press a button to enter inner loop");
+    println!("Press any button to enter inner loop");
     for e in PistonWindow::new(window, empty_app()) {
         e.draw_2d(|_c, g| {
             clear([0.5, 1.0, 0.5, 1.0], g);
@@ -39,7 +39,7 @@ fn main() {
                     break;
                 }
             }
-            println!("You have exit the inner loop");
+            println!("You have exited the inner loop");
         }
     }
 }
