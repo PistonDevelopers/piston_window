@@ -108,6 +108,19 @@ impl<T> PistonWindow<T> {
             }
         }
     }
+
+    /// Renders 3D graphics.
+    pub fn draw_3d<F>(&self, mut f: F)
+        where F: FnMut(&mut Gfx)
+    {
+        use piston::event::RenderEvent;
+
+        if let Some(ref e) = self.event {
+            if let Some(_) = e.render_args() {
+                f(&mut *self.gfx.borrow_mut())
+            }
+        }
+    }
 }
 
 impl Iterator for PistonWindow {
