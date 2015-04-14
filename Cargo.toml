@@ -1,7 +1,7 @@
 [package]
 
 name = "piston_window"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["bvssvni <bvssvni@gmail.com>"]
 keywords = ["window", "piston"]
 description = "The official Piston window back-end for the Piston game engine"
@@ -14,9 +14,6 @@ homepage = "https://github.com/pistondevelopers/piston_window"
 
 path = "src/lib.rs"
 name = "piston_window"
-
-[dependencies.pistoncore-glutin_window]
-git = "https://github.com/pistondevelopers/glutin_window"
 
 [dependencies.piston]
 git = "https://github.com/pistondevelopers/piston"
@@ -32,3 +29,6 @@ git = "https://github.com/pistondevelopers/gfx_graphics"
 
 [dependencies.piston2d-graphics]
 git = "https://github.com/pistondevelopers/graphics"
+
+[dev-dependencies.pistoncore-glutin_window]
+git = "https://github.com/pistondevelopers/glutin_window"

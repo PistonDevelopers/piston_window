@@ -2,7 +2,6 @@
 
 //! The official Piston window back-end for the Piston game engine
 
-extern crate glutin_window;
 extern crate piston;
 extern crate gfx;
 extern crate gfx_device_gl;
@@ -13,28 +12,37 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::any::Any;
 
-use glutin_window::GlutinWindow;
 use piston::{ event, window };
 use gfx::traits::*;
 use gfx_graphics::{ Gfx2d, GfxGraphics };
 use graphics::Context;
 
-/// The type of event emitted from event loop.
-pub type PistonEvent = event::Event<<GlutinWindow as window::Window>::Event>;
-
 /// Contains everything required for controlling window, graphics, event loop.
-#[derive(Clone)]
-pub struct PistonWindow<T = ()> {
+pub struct PistonWindow<W: window::Window, T = ()> {
     /// The window.
-    pub window: Rc<RefCell<GlutinWindow>>,
+    pub window: Rc<RefCell<W>>,
     /// The gfx data.
     pub gfx: Rc<RefCell<Gfx>>,
     /// The event loop.
-    pub events: Rc<RefCell<event::events::Events<GlutinWindow, PistonEvent>>>,
+    pub events: Rc<RefCell<event::events::Events<W, event::Event<W::Event>>>>,
     /// The event.
-    pub event: Option<PistonEvent>,
+    pub event: Option<event::Event<W::Event>>,
     /// Application structure.
     pub app: Rc<RefCell<T>>,
+}
+
+impl<W, T> Clone for PistonWindow<W, T>
+    where W: window::Window, W::Event: Clone
+{
+    fn clone(&self) -> Self {
+        PistonWindow {
+            window: self.window.clone(),
+            gfx: self.gfx.clone(),
+            events: self.events.clone(),
+            event: self.event.clone(),
+            app: self.app.clone(),
+        }
+    }
 }
 
 /// Contains Gfx data.
@@ -52,9 +60,13 @@ pub struct Gfx {
     pub g2d: Gfx2d<gfx_device_gl::Resources>,
 }
 
-impl<T> PistonWindow<T> {
+impl<W, T> PistonWindow<W, T>
+    where W: window::Window, W::Event: event::GenericEvent
+{
     /// Creates a new piston object.
-    pub fn new(window: Rc<RefCell<GlutinWindow>>, app: Rc<RefCell<T>>) -> Self {
+    pub fn new(window: Rc<RefCell<W>>, app: Rc<RefCell<T>>) -> Self
+        where W: window::OpenGLWindow
+    {
         use piston::event::Events;
         use piston::window::{ OpenGLWindow, Window };
 
@@ -80,7 +92,7 @@ impl<T> PistonWindow<T> {
     }
 
     /// Changes application structure.
-    pub fn app<U>(self, app: Rc<RefCell<U>>) -> PistonWindow<U> {
+    pub fn app<U>(self, app: Rc<RefCell<U>>) -> PistonWindow<W, U> {
         PistonWindow {
             window: self.window,
             gfx: self.gfx,
@@ -123,10 +135,12 @@ impl<T> PistonWindow<T> {
     }
 }
 
-impl Iterator for PistonWindow {
-    type Item = PistonWindow;
+impl<W, T> Iterator for PistonWindow<W, T>
+    where W: window::Window, W::Event: event::GenericEvent
+{
+    type Item = PistonWindow<W, T>;
 
-    fn next(&mut self) -> Option<PistonWindow> {
+    fn next(&mut self) -> Option<PistonWindow<W, T>> {
         use piston::event::*;
 
         if let Some(e) = self.events.borrow_mut().next() {
@@ -161,7 +175,9 @@ impl Iterator for PistonWindow {
     }
 }
 
-impl event::GenericEvent for PistonWindow {
+impl<W, T> event::GenericEvent for PistonWindow<W, T>
+    where W: window::Window, W::Event: event::GenericEvent
+{
     fn event_id(&self) -> event::EventId {
         match self.event {
             Some(ref e) => e.event_id(),
@@ -193,8 +209,10 @@ impl event::GenericEvent for PistonWindow {
     }
 }
 
-impl window::Window for PistonWindow {
-    type Event = <GlutinWindow as window::Window>::Event;
+impl<W, T> window::Window for PistonWindow<W, T>
+    where W: window::Window
+{
+    type Event = <W as window::Window>::Event;
 
     fn should_close(&self) -> bool { self.window.borrow().should_close() }
     fn size(&self) -> window::Size { self.window.borrow().size() }
@@ -205,7 +223,9 @@ impl window::Window for PistonWindow {
     }
 }
 
-impl window::AdvancedWindow for PistonWindow {
+impl<W, T> window::AdvancedWindow for PistonWindow<W, T>
+    where W: window::AdvancedWindow
+{
     fn get_title(&self) -> String { self.window.borrow().get_title() }
     fn set_title(&mut self, title: String) {
         self.window.borrow_mut().set_title(title)
