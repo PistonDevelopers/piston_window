@@ -127,7 +127,7 @@ impl Iterator for PistonWindow {
     type Item = PistonWindow;
 
     fn next(&mut self) -> Option<PistonWindow> {
-        use piston::event::AfterRenderEvent;
+        use piston::event::*;
 
         if let Some(e) = self.events.borrow_mut().next() {
             if let Some(_) = e.after_render_args() {
@@ -139,6 +139,15 @@ impl Iterator for PistonWindow {
                 } = &mut *self.gfx.borrow_mut();
                 device.after_frame();
                 factory.cleanup();
+            }
+
+            if let Some(size) = e.resize_args() {
+                let &mut Gfx {
+                    ref mut output,
+                    ref mut factory,
+                    ..
+                } = &mut *self.gfx.borrow_mut();
+                *output = factory.make_fake_output(size[0] as u16, size[1] as u16);
             }
 
             Some(PistonWindow {
