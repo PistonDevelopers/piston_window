@@ -122,7 +122,14 @@ impl<W, T> PistonWindow<W, T>
 
         if let Some(ref e) = self.event {
             if let Some(_) = e.render_args() {
-                f(&mut *self.canvas.borrow_mut())
+                f(&mut *self.canvas.borrow_mut());
+                let &mut gfx::Canvas {
+                    ref mut device,
+                    ref mut renderer,
+                    ..
+                } = &mut *self.canvas.borrow_mut();
+                device.submit(renderer.as_buffer());
+                renderer.reset();
             }
         }
     }
