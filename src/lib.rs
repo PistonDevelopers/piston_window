@@ -47,15 +47,8 @@ impl<W, T> Clone for PistonWindow<W, T>
 
 /// Contains Gfx data.
 pub struct Gfx {
-    /// The device.
-    pub device: gfx_device_gl::Device,
-    /// The output.
-    pub output: gfx_device_gl::Output,
-    /// The factory.
-    pub factory: gfx_device_gl::Factory,
-    /// Renderer.
-    pub renderer: gfx::render::Renderer<gfx_device_gl::Resources,
-        gfx_device_gl::CommandBuffer>,
+    /// Canvas
+    pub canvas: gfx::Canvas<gfx_device_gl::Output, gfx_device_gl::Device, gfx_device_gl::Factory>,
     /// Gfx2d.
     pub g2d: Gfx2d<gfx_device_gl::Resources>,
 }
@@ -71,18 +64,18 @@ impl<W, T> PistonWindow<W, T>
         use piston::window::{ OpenGLWindow, Window };
 
         let (mut device, mut factory) = gfx_device_gl::create(|s| window.borrow_mut().get_proc_address(s));
+
         let size = window.borrow().size();
         let output = factory.make_fake_output(size.width as u16, size.height as u16);
-        let renderer = factory.create_renderer();
+
         let g2d = Gfx2d::new(&mut device, &mut factory);
+
+        let canvas = (output, device, factory).into_canvas();
 
         PistonWindow {
             window: window.clone(),
             gfx: Rc::new(RefCell::new(Gfx {
-                device: device,
-                output: output,
-                factory: factory,
-                renderer: renderer,
+                canvas: canvas,
                 g2d: g2d,
             })),
             events: Rc::new(RefCell::new(window.events())),
@@ -112,8 +105,20 @@ impl<W, T> PistonWindow<W, T>
 
         if let Some(ref e) = self.event {
             if let Some(args) = e.render_args() {
-                let &mut Gfx { ref mut device, ref mut renderer, ref mut output,
-                    ref mut g2d, .. } = &mut *self.gfx.borrow_mut();
+
+                let &mut Gfx {
+                    ref mut canvas,
+                    ref mut g2d,
+                    ..
+                } = &mut *self.gfx.borrow_mut();
+
+                let &mut gfx::Canvas {
+                    ref mut device,
+                    ref mut renderer,
+                    ref mut output,
+                    ..
+                } = canvas;
+
                 g2d.draw(renderer, output, args.viewport(), f);
                 device.submit(renderer.as_buffer());
                 renderer.reset();
@@ -147,21 +152,25 @@ impl<W, T> Iterator for PistonWindow<W, T>
             if let Some(_) = e.after_render_args() {
                 // After swapping buffers.
                 let &mut Gfx {
-                    ref mut device,
-                    ref mut factory,
+                    ref mut canvas,
                     ..
                 } = &mut *self.gfx.borrow_mut();
-                device.after_frame();
-                factory.cleanup();
+                canvas.device.after_frame();
+                canvas.factory.cleanup();
             }
 
             if let Some(size) = e.resize_args() {
                 let &mut Gfx {
-                    ref mut output,
-                    ref mut factory,
+                    ref mut canvas,
                     ..
                 } = &mut *self.gfx.borrow_mut();
-                *output = factory.make_fake_output(size[0] as u16, size[1] as u16);
+
+                let &mut gfx::Canvas {
+                    ref mut output,
+                    ..
+                } = canvas;
+
+                *output = canvas.factory.make_fake_output(size[0] as u16, size[1] as u16);
             }
 
             Some(PistonWindow {
