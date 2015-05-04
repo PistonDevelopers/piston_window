@@ -26,7 +26,7 @@ pub struct PistonWindow<W: window::Window, T = ()> {
     /// Gfx2d
     pub g2d: Rc<RefCell<Gfx2d<gfx_device_gl::Resources>>>,
     /// The event loop.
-    pub events: Rc<RefCell<event::events::Events<W, event::Event<W::Event>>>>,
+    pub events: Rc<RefCell<event::WindowEvents<W, event::Event<W::Event>>>>,
     /// The event.
     pub event: Option<event::Event<W::Event>>,
     /// Application structure.
