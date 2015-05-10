@@ -60,8 +60,8 @@ impl<W, T> PistonWindow<W, T>
 
         let (mut device, mut factory) = gfx_device_gl::create(|s| window.borrow_mut().get_proc_address(s));
 
-        let size = window.borrow().size();
-        let output = factory.make_fake_output(size.width as u16, size.height as u16);
+        let draw_size = window.borrow().draw_size();
+        let output = factory.make_fake_output(draw_size.width as u16, draw_size.height as u16);
 
         let g2d = Gfx2d::new(&mut device, &mut factory);
 
@@ -158,7 +158,7 @@ impl<W, T> Iterator for PistonWindow<W, T>
 
             }
 
-            if let Some(size) = e.resize_args() {
+            if let Some(_) = e.resize_args() {
 
                 let &mut gfx::Canvas {
                     ref mut output,
@@ -166,7 +166,8 @@ impl<W, T> Iterator for PistonWindow<W, T>
                     ..
                 } = &mut *self.canvas.borrow_mut();
 
-                *output = factory.make_fake_output(size[0] as u16, size[1] as u16);
+                let draw_size = self.window.borrow().draw_size();
+                *output = factory.make_fake_output(draw_size.width as u16, draw_size.height as u16);
             }
 
             Some(PistonWindow {
