@@ -17,13 +17,20 @@ use gfx::traits::*;
 use gfx_graphics::{ Gfx2d, GfxGraphics };
 use graphics::Context;
 
+/// Actual gfx::Stream implementation carried by the window.
+pub type GfxStream = gfx::OwnedStream<
+    gfx_device_gl::Resources, gfx_device_gl::CommandBuffer, gfx_device_gl::Output
+>;
+
 /// Contains everything required for controlling window, graphics, event loop.
 pub struct PistonWindow<W: window::Window, T = ()> {
     /// The window.
     pub window: Rc<RefCell<W>>,
-    /// The gfx Canvas
-    pub canvas: Rc<RefCell<gfx::Canvas<gfx_device_gl::Output, gfx_device_gl::Device, gfx_device_gl::Factory>>>,
-    /// Gfx2d
+    /// GFX stream.
+    pub stream: Rc<RefCell<GfxStream>>,
+    /// GFX device.
+    pub device: Rc<RefCell<gfx_device_gl::Device>>,
+    /// Gfx2d.
     pub g2d: Rc<RefCell<Gfx2d<gfx_device_gl::Resources>>>,
     /// The event loop.
     pub events: Rc<RefCell<event::WindowEvents<W, event::Event<W::Event>>>>,
@@ -39,7 +46,8 @@ impl<W, T> Clone for PistonWindow<W, T>
     fn clone(&self) -> Self {
         PistonWindow {
             window: self.window.clone(),
-            canvas: self.canvas.clone(),
+            stream: self.stream.clone(),
+            device: self.device.clone(),
             g2d: self.g2d.clone(),
             events: self.events.clone(),
             event: self.event.clone(),
@@ -58,18 +66,20 @@ impl<W, T> PistonWindow<W, T>
         use piston::event::Events;
         use piston::window::{ OpenGLWindow, Window };
 
-        let (mut device, mut factory) = gfx_device_gl::create(|s| window.borrow_mut().get_proc_address(s));
+        let mut device = gfx_device_gl::Device::new(|s| window.borrow_mut().get_proc_address(s));
+        let mut factory = device.spawn_factory();
 
         let draw_size = window.borrow().draw_size();
         let output = factory.make_fake_output(draw_size.width as u16, draw_size.height as u16);
 
         let g2d = Gfx2d::new(&mut device, &mut factory);
 
-        let canvas = (output, device, factory).into_canvas();
+        let stream = factory.create_stream(output);
 
         PistonWindow {
             window: window.clone(),
-            canvas: Rc::new(RefCell::new(canvas)),
+            stream: Rc::new(RefCell::new(stream)),
+            device: Rc::new(RefCell::new(device)),
             g2d: Rc::new(RefCell::new(g2d)),
             events: Rc::new(RefCell::new(window.events())),
             event: None,
@@ -81,7 +91,8 @@ impl<W, T> PistonWindow<W, T>
     pub fn app<U>(self, app: Rc<RefCell<U>>) -> PistonWindow<W, U> {
         PistonWindow {
             window: self.window,
-            canvas: self.canvas,
+            stream: self.stream,
+            device: self.device,
             g2d: self.g2d,
             events: self.events,
             event: self.event,
@@ -90,8 +101,8 @@ impl<W, T> PistonWindow<W, T>
     }
 
     /// Renders 2D graphics.
-    pub fn draw_2d<F>(&self, f: F)
-        where F: FnMut(Context, &mut GfxGraphics<
+    pub fn draw_2d<F>(&self, f: F) where
+        F: FnMut(Context, &mut GfxGraphics<
             gfx_device_gl::Resources, gfx_device_gl::CommandBuffer,
             gfx_device_gl::Output>)
     {
@@ -99,37 +110,27 @@ impl<W, T> PistonWindow<W, T>
 
         if let Some(ref e) = self.event {
             if let Some(args) = e.render_args() {
-
-                let &mut gfx::Canvas {
-                    ref mut device,
-                    ref mut renderer,
-                    ref mut output,
-                    ..
-                } = &mut *self.canvas.borrow_mut();
-
-                self.g2d.borrow_mut().draw(renderer, output, args.viewport(), f);
-                device.submit(renderer.as_buffer());
-                renderer.reset();
+                let mut stream = self.stream.borrow_mut();
+                {
+                    let (renderer, output) = stream.access();
+                    self.g2d.borrow_mut().draw(renderer, output, args.viewport(), f);
+                }
+                stream.flush(&mut *self.device.borrow_mut());
             }
         }
     }
 
     /// Renders 3D graphics.
-    pub fn draw_3d<F>(&self, mut f: F)
-        where F: FnMut(&mut gfx::Canvas<gfx_device_gl::Output, gfx_device_gl::Device, gfx_device_gl::Factory>)
+    pub fn draw_3d<F>(&self, mut f: F) where
+        F: FnMut(&mut GfxStream)
     {
         use piston::event::RenderEvent;
 
         if let Some(ref e) = self.event {
             if let Some(_) = e.render_args() {
-                f(&mut *self.canvas.borrow_mut());
-                let &mut gfx::Canvas {
-                    ref mut device,
-                    ref mut renderer,
-                    ..
-                } = &mut *self.canvas.borrow_mut();
-                device.submit(renderer.as_buffer());
-                renderer.reset();
+                let mut stream = self.stream.borrow_mut();
+                f(&mut *stream);
+                stream.flush(&mut *self.device.borrow_mut())
             }
         }
     }
@@ -146,33 +147,20 @@ impl<W, T> Iterator for PistonWindow<W, T>
         if let Some(e) = self.events.borrow_mut().next() {
             if let Some(_) = e.after_render_args() {
                 // After swapping buffers.
-
-                let &mut gfx::Canvas {
-                    ref mut device,
-                    ref mut factory,
-                    ..
-                } = &mut *self.canvas.borrow_mut();
-
-                device.after_frame();
-                factory.cleanup();
-
+                self.device.borrow_mut().cleanup();
             }
 
             if let Some(_) = e.resize_args() {
-
-                let &mut gfx::Canvas {
-                    ref mut output,
-                    ref mut factory,
-                    ..
-                } = &mut *self.canvas.borrow_mut();
-
+                let mut stream = self.stream.borrow_mut();
                 let draw_size = self.window.borrow().draw_size();
-                *output = factory.make_fake_output(draw_size.width as u16, draw_size.height as u16);
+                stream.out.width = draw_size.width as u16;
+                stream.out.height = draw_size.height as u16;
             }
 
             Some(PistonWindow {
                 window: self.window.clone(),
-                canvas: self.canvas.clone(),
+                stream: self.stream.clone(),
+                device: self.device.clone(),
                 g2d: self.g2d.clone(),
                 events: self.events.clone(),
                 event: Some(e),
@@ -204,7 +192,8 @@ impl<W, T> event::GenericEvent for PistonWindow<W, T>
                 Some(e) => {
                     Some(PistonWindow {
                         window: old_event.window.clone(),
-                        canvas: old_event.canvas.clone(),
+                        stream: old_event.stream.clone(),
+                        device: old_event.device.clone(),
                         g2d: old_event.g2d.clone(),
                         events: old_event.events.clone(),
                         event: Some(e),
