@@ -66,13 +66,13 @@ impl<W, T> PistonWindow<W, T>
         use piston::event::Events;
         use piston::window::{ OpenGLWindow, Window };
 
-        let mut device = gfx_device_gl::Device::new(|s| window.borrow_mut().get_proc_address(s));
+        let device = gfx_device_gl::Device::new(|s| window.borrow_mut().get_proc_address(s));
         let mut factory = device.spawn_factory();
 
         let draw_size = window.borrow().draw_size();
         let output = factory.make_fake_output(draw_size.width as u16, draw_size.height as u16);
 
-        let g2d = Gfx2d::new(&mut device, &mut factory);
+        let g2d = Gfx2d::new(&mut factory);
 
         let stream = factory.create_stream(output);
 
