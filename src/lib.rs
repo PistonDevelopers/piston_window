@@ -18,9 +18,7 @@ use gfx_graphics::{ Gfx2d, GfxGraphics };
 use graphics::Context;
 
 /// Actual gfx::Stream implementation carried by the window.
-pub type GfxStream = gfx::OwnedStream<
-    gfx_device_gl::Resources, gfx_device_gl::CommandBuffer, gfx_device_gl::Output
->;
+pub type GfxStream = gfx::OwnedStream<gfx_device_gl::Device, gfx_device_gl::Output>;
 
 /// Contains everything required for controlling window, graphics, event loop.
 pub struct PistonWindow<W: window::Window, T = ()> {
