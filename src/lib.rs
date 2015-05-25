@@ -7,6 +7,15 @@ extern crate gfx;
 extern crate gfx_device_gl;
 extern crate gfx_graphics;
 extern crate graphics;
+extern crate shader_version;
+extern crate glutin_window;
+
+use glutin_window::GlutinWindow;
+pub use shader_version::OpenGL;
+pub use graphics::*;
+pub use piston::window::*;
+pub use piston::event::*;
+pub use piston::input::*;
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -15,10 +24,18 @@ use std::any::Any;
 use piston::{ event, window };
 use gfx::traits::*;
 use gfx_graphics::{ Gfx2d, GfxGraphics };
-use graphics::Context;
 
 /// Actual gfx::Stream implementation carried by the window.
 pub type GfxStream = gfx::OwnedStream<gfx_device_gl::Device, gfx_device_gl::Output>;
+/// Glyph cache.
+type PistonGlyphCache = gfx_graphics::GlyphCache<gfx_device_gl::Resources, gfx_device_gl::Factory>;
+/// 2D graphics.
+type PistonGraphics<'a> = GfxGraphics<'a, gfx_device_gl::Resources, gfx_device_gl::CommandBuffer, gfx_device_gl::Output>;
+
+/// Creates a window using default window back-end.
+pub fn window(opengl: OpenGL, settings: WindowSettings) -> Rc<RefCell<GlutinWindow>> {
+    Rc::new(RefCell::new(GlutinWindow::new(opengl, settings)))
+}
 
 /// Contains everything required for controlling window, graphics, event loop.
 pub struct PistonWindow<W: window::Window, T = ()> {
