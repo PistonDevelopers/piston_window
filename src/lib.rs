@@ -38,7 +38,7 @@ pub fn window(opengl: OpenGL, settings: WindowSettings) -> Rc<RefCell<GlutinWind
 }
 
 /// Contains everything required for controlling window, graphics, event loop.
-pub struct PistonWindow<W: window::Window, T = ()> {
+pub struct PistonWindow<W: window::Window = GlutinWindow, T = ()> {
     /// The window.
     pub window: Rc<RefCell<W>>,
     /// GFX stream.
