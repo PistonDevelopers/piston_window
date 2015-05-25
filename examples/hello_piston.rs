@@ -7,7 +7,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use glutin_window::{ OpenGL, GlutinWindow };
 use piston_window::*;
-use piston::window::{ WindowSettings, Size };
+use piston::window::WindowSettings;
 
 use piston::event::*;
 use graphics::*;
@@ -16,8 +16,7 @@ use piston::input::*;
 fn main() {
     let window = Rc::new(RefCell::new(GlutinWindow::new(
         OpenGL::_3_2,
-        WindowSettings::new("Hello Piston!".to_string(),
-            Size { width: 640, height: 480 })
+        WindowSettings::new("Hello Piston!", [640, 480])
             .exit_on_esc(true)
     )));
     println!("Press any button to enter inner loop");
