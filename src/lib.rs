@@ -28,9 +28,9 @@ use gfx_graphics::{ Gfx2d, GfxGraphics };
 /// Actual gfx::Stream implementation carried by the window.
 pub type GfxStream = gfx::OwnedStream<gfx_device_gl::Device, gfx_device_gl::Output>;
 /// Glyph cache.
-type PistonGlyphCache = gfx_graphics::GlyphCache<gfx_device_gl::Resources, gfx_device_gl::Factory>;
+type Glyphs = gfx_graphics::GlyphCache<gfx_device_gl::Resources, gfx_device_gl::Factory>;
 /// 2D graphics.
-type PistonGraphics<'a> = GfxGraphics<'a, gfx_device_gl::Resources, gfx_device_gl::CommandBuffer, gfx_device_gl::Output>;
+type G2d<'a> = GfxGraphics<'a, gfx_device_gl::Resources, gfx_device_gl::CommandBuffer, gfx_device_gl::Output>;
 
 /// Creates a window using default window back-end.
 pub fn window(settings: WindowSettings) -> Rc<RefCell<GlutinWindow>> {
