@@ -31,6 +31,10 @@ git = "https://github.com/pistondevelopers/gfx_graphics"
 [dependencies.piston2d-graphics]
 git = "https://github.com/pistondevelopers/graphics"
 
-[dev-dependencies.pistoncore-glutin_window]
+[dependencies.pistoncore-glutin_window]
 #git = "https://github.com/pistondevelopers/glutin_window"
 version = "0.0.8"
+
+[dependencies.shader_version]
+#git = "https://github.com/PistonDevelopers/shader_version"
+version = "0.0.6"

@@ -1,24 +1,13 @@
 extern crate piston_window;
-extern crate glutin_window;
-extern crate piston;
-extern crate graphics;
 
-use std::cell::RefCell;
-use std::rc::Rc;
-use glutin_window::{ OpenGL, GlutinWindow };
 use piston_window::*;
-use piston::window::WindowSettings;
-
-use piston::event::*;
-use graphics::*;
-use piston::input::*;
 
 fn main() {
-    let window = Rc::new(RefCell::new(GlutinWindow::new(
-        OpenGL::_3_2,
-        WindowSettings::new("Hello Piston!", [640, 480])
+    let window = window(
+            OpenGL::_3_2,
+            WindowSettings::new("Hello Piston!", [640, 480])
             .exit_on_esc(true)
-    )));
+        );
     println!("Press any button to enter inner loop");
     for e in PistonWindow::new(window, empty_app()) {
         e.draw_2d(|_c, g| {
