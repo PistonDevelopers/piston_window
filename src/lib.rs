@@ -36,6 +36,8 @@ pub struct PistonWindow<W: window::Window, T = ()> {
     pub event: Option<event::Event<W::Event>>,
     /// Application structure.
     pub app: Rc<RefCell<T>>,
+    /// The factory that was created along with the device.
+    pub factory: Rc<RefCell<gfx_device_gl::Factory>>,
 }
 
 impl<W, T> Clone for PistonWindow<W, T>
@@ -50,6 +52,7 @@ impl<W, T> Clone for PistonWindow<W, T>
             events: self.events.clone(),
             event: self.event.clone(),
             app: self.app.clone(),
+            factory: self.factory.clone(),
         }
     }
 }
@@ -64,8 +67,8 @@ impl<W, T> PistonWindow<W, T>
         use piston::event::Events;
         use piston::window::{ OpenGLWindow, Window };
 
-        let device = gfx_device_gl::Device::new(|s| window.borrow_mut().get_proc_address(s));
-        let mut factory = device.spawn_factory();
+        let (device, mut factory) =
+            gfx_device_gl::create(|s| window.borrow_mut().get_proc_address(s));
 
         let draw_size = window.borrow().draw_size();
         let output = factory.make_fake_output(draw_size.width as u16, draw_size.height as u16);
@@ -82,6 +85,7 @@ impl<W, T> PistonWindow<W, T>
             events: Rc::new(RefCell::new(window.events())),
             event: None,
             app: app,
+            factory: Rc::new(RefCell::new(factory)),
         }
     }
 
@@ -95,6 +99,7 @@ impl<W, T> PistonWindow<W, T>
             events: self.events,
             event: self.event,
             app: app,
+            factory: self.factory,
         }
     }
 
@@ -163,6 +168,7 @@ impl<W, T> Iterator for PistonWindow<W, T>
                 events: self.events.clone(),
                 event: Some(e),
                 app: self.app.clone(),
+                factory: self.factory.clone(),
             })
         } else { None }
     }
@@ -196,6 +202,7 @@ impl<W, T> event::GenericEvent for PistonWindow<W, T>
                         events: old_event.events.clone(),
                         event: Some(e),
                         app: old_event.app.clone(),
+                        factory: old_event.factory.clone(),
                     })
                 }
                 None => None
