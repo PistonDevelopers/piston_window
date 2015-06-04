@@ -21,7 +21,6 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::any::Any;
 
-use piston::{ event, window };
 use gfx::traits::*;
 use gfx_graphics::{ Gfx2d, GfxGraphics };
 
@@ -33,7 +32,7 @@ type Glyphs = gfx_graphics::GlyphCache<gfx_device_gl::Resources, gfx_device_gl::
 type G2d<'a> = GfxGraphics<'a, gfx_device_gl::Resources, gfx_device_gl::CommandBuffer, gfx_device_gl::Output>;
 
 /// Contains everything required for controlling window, graphics, event loop.
-pub struct PistonWindow<W: window::Window = GlutinWindow, T = ()> {
+pub struct PistonWindow<W: Window = GlutinWindow, T = ()> {
     /// The window.
     pub window: Rc<RefCell<W>>,
     /// GFX stream.
@@ -43,9 +42,9 @@ pub struct PistonWindow<W: window::Window = GlutinWindow, T = ()> {
     /// Gfx2d.
     pub g2d: Rc<RefCell<Gfx2d<gfx_device_gl::Resources>>>,
     /// The event loop.
-    pub events: Rc<RefCell<event::WindowEvents<W, event::Event<W::Event>>>>,
+    pub events: Rc<RefCell<WindowEvents<W, Event<W::Event>>>>,
     /// The event.
-    pub event: Option<event::Event<W::Event>>,
+    pub event: Option<Event<W::Event>>,
     /// Application structure.
     pub app: Rc<RefCell<T>>,
     /// The factory that was created along with the device.
@@ -62,7 +61,7 @@ impl<T> From<WindowSettings> for PistonWindow<T>
 }
 
 impl<W, T> Clone for PistonWindow<W, T>
-    where W: window::Window, W::Event: Clone
+    where W: Window, W::Event: Clone
 {
     fn clone(&self) -> Self {
         PistonWindow {
@@ -79,11 +78,11 @@ impl<W, T> Clone for PistonWindow<W, T>
 }
 
 impl<W, T> PistonWindow<W, T>
-    where W: window::Window, W::Event: event::GenericEvent
+    where W: Window, W::Event: GenericEvent
 {
     /// Creates a new piston object.
     pub fn new(window: Rc<RefCell<W>>, app: Rc<RefCell<T>>) -> Self
-        where W: window::OpenGLWindow
+        where W: OpenGLWindow
     {
         use piston::event::Events;
         use piston::window::{ OpenGLWindow, Window };
@@ -161,7 +160,7 @@ impl<W, T> PistonWindow<W, T>
 }
 
 impl<W, T> Iterator for PistonWindow<W, T>
-    where W: window::Window, W::Event: event::GenericEvent
+    where W: Window, W::Event: GenericEvent
 {
     type Item = PistonWindow<W, T>;
 
@@ -195,13 +194,13 @@ impl<W, T> Iterator for PistonWindow<W, T>
     }
 }
 
-impl<W, T> event::GenericEvent for PistonWindow<W, T>
-    where W: window::Window, W::Event: event::GenericEvent
+impl<W, T> GenericEvent for PistonWindow<W, T>
+    where W: Window, W::Event: GenericEvent
 {
-    fn event_id(&self) -> event::EventId {
+    fn event_id(&self) -> EventId {
         match self.event {
             Some(ref e) => e.event_id(),
-            None => event::EventId("")
+            None => EventId("")
         }
     }
 
@@ -211,9 +210,9 @@ impl<W, T> event::GenericEvent for PistonWindow<W, T>
         self.event.as_ref().unwrap().with_args(f)
     }
 
-    fn from_args(event_id: event::EventId, any: &Any, old_event: &Self) -> Option<Self> {
+    fn from_args(event_id: EventId, any: &Any, old_event: &Self) -> Option<Self> {
         if let Some(ref e) = old_event.event {
-            match event::GenericEvent::from_args(event_id, any, e) {
+            match GenericEvent::from_args(event_id, any, e) {
                 Some(e) => {
                     Some(PistonWindow {
                         window: old_event.window.clone(),
@@ -232,22 +231,22 @@ impl<W, T> event::GenericEvent for PistonWindow<W, T>
     }
 }
 
-impl<W, T> window::Window for PistonWindow<W, T>
-    where W: window::Window
+impl<W, T> Window for PistonWindow<W, T>
+    where W: Window
 {
-    type Event = <W as window::Window>::Event;
+    type Event = <W as Window>::Event;
 
     fn should_close(&self) -> bool { self.window.borrow().should_close() }
-    fn size(&self) -> window::Size { self.window.borrow().size() }
-    fn draw_size(&self) -> window::Size { self.window.borrow().draw_size() }
+    fn size(&self) -> Size { self.window.borrow().size() }
+    fn draw_size(&self) -> Size { self.window.borrow().draw_size() }
     fn swap_buffers(&mut self) { self.window.borrow_mut().swap_buffers() }
     fn poll_event(&mut self) -> Option<Self::Event> {
-        window::Window::poll_event(&mut *self.window.borrow_mut())
+        Window::poll_event(&mut *self.window.borrow_mut())
     }
 }
 
-impl<W, T> window::AdvancedWindow for PistonWindow<W, T>
-    where W: window::AdvancedWindow
+impl<W, T> AdvancedWindow for PistonWindow<W, T>
+    where W: AdvancedWindow
 {
     fn get_title(&self) -> String { self.window.borrow().get_title() }
     fn set_title(&mut self, title: String) {
