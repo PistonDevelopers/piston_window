@@ -32,11 +32,6 @@ type Glyphs = gfx_graphics::GlyphCache<gfx_device_gl::Resources, gfx_device_gl::
 /// 2D graphics.
 type G2d<'a> = GfxGraphics<'a, gfx_device_gl::Resources, gfx_device_gl::CommandBuffer, gfx_device_gl::Output>;
 
-/// Creates a window using default window back-end.
-pub fn window(settings: WindowSettings) -> Rc<RefCell<GlutinWindow>> {
-    Rc::new(RefCell::new(GlutinWindow::new(settings)))
-}
-
 /// Contains everything required for controlling window, graphics, event loop.
 pub struct PistonWindow<W: window::Window = GlutinWindow, T = ()> {
     /// The window.
@@ -57,9 +52,12 @@ pub struct PistonWindow<W: window::Window = GlutinWindow, T = ()> {
     pub factory: Rc<RefCell<gfx_device_gl::Factory>>,
 }
 
-impl From<WindowSettings> for PistonWindow {
-    fn from(settings: WindowSettings) -> PistonWindow {
-        PistonWindow::new(window(settings), empty_app())
+impl<T> From<WindowSettings> for PistonWindow<T>
+    where T: Window + OpenGLWindow + From<WindowSettings>,
+          T::Event: GenericEvent
+{
+    fn from(settings: WindowSettings) -> PistonWindow<T> {
+        PistonWindow::new(Rc::new(RefCell::new(settings.into())), empty_app())
     }
 }
 
