@@ -1,7 +1,9 @@
-# piston_window
+# piston_window [![Build Status](https://travis-ci.org/PistonDevelopers/piston_window.svg?branch=master)](https://travis-ci.org/PistonDevelopers/piston_window)
 The official Piston convenience window wrapper for the Piston game engine
 
 Piston-Window is designed for only one purpose: Convenience.
+
+[Documentation](http://docs.piston.rs/piston_window/piston_window/)
 
 We have now released 0.2!
 
