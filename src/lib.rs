@@ -261,5 +261,25 @@ impl<W, T> AdvancedWindow for PistonWindow<W, T>
     }
 }
 
+impl<W, T> EventLoop for PistonWindow<W, T>
+    where W: Window
+{
+    fn set_ups(&mut self, frames: u64) {
+        self.events.borrow_mut().set_ups(frames);
+    }
+
+    fn set_max_fps(&mut self, frames: u64) {
+        self.events.borrow_mut().set_max_fps(frames);
+    }
+
+    fn set_swap_buffers(&mut self, enable: bool) {
+        self.events.borrow_mut().set_swap_buffers(enable);
+    }
+
+    fn set_bench_mode(&mut self, enable: bool) {
+        self.events.borrow_mut().set_bench_mode(enable);
+    }
+}
+
 /// Creates a new empty application.
 pub fn empty_app() -> Rc<RefCell<()>> { Rc::new(RefCell::new(())) }
