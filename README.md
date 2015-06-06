@@ -22,3 +22,7 @@ All controller libraries in Piston, such as drag controller or a camera controll
 If you want to run a custom scene in your game, you can use `for e in e.clone() { ... }` to create a nested game loop. This allows you to swap out the game logic entirely, so you can write mini games as separate libraries targeting `PistonWindow` and then glue it together in a larger project.
 
 Piston libraries do not depend on "piston_window" directly but uses traits either by the Piston core or other back-end abstractions such as Gfx (3D graphics). The purpose is to make it easier to share code across projects, even if they use different back-ends.
+
+### Dependency graph
+
+![Dependencies](./Cargo.png)
