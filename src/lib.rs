@@ -16,6 +16,7 @@ pub use graphics::*;
 pub use piston::window::*;
 pub use piston::event::*;
 pub use piston::input::*;
+pub use gfx_graphics::{ Texture, TextureSettings };
 
 use std::cell::RefCell;
 use std::rc::Rc;
