@@ -126,7 +126,7 @@ impl<W, T> PistonWindow<W, T>
 
     /// Renders 2D graphics.
     pub fn draw_2d<F>(&self, f: F) where
-        F: FnMut(Context, &mut GfxGraphics<
+        F: FnOnce(Context, &mut GfxGraphics<
             gfx_device_gl::Resources, gfx_device_gl::CommandBuffer,
             gfx_device_gl::Output>)
     {
