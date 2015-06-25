@@ -145,8 +145,8 @@ impl<W, T> PistonWindow<W, T>
     }
 
     /// Renders 3D graphics.
-    pub fn draw_3d<F>(&self, mut f: F) where
-        F: FnMut(&mut GfxStream)
+    pub fn draw_3d<F>(&self, f: F) where
+        F: FnOnce(&mut GfxStream)
     {
         use piston::event::RenderEvent;
 
