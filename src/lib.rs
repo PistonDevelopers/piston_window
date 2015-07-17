@@ -30,7 +30,10 @@ pub type GfxStream = gfx::OwnedStream<gfx_device_gl::Device, gfx_device_gl::Outp
 /// Glyph cache.
 pub type Glyphs = gfx_graphics::GlyphCache<gfx_device_gl::Resources, gfx_device_gl::Factory>;
 /// 2D graphics.
-pub type G2d<'a> = GfxGraphics<'a, gfx_device_gl::Resources, gfx_device_gl::CommandBuffer, gfx_device_gl::Output>;
+pub type G2d<'a> = GfxGraphics<'a,
+    gfx_device_gl::Resources,
+    gfx_device_gl::CommandBuffer<gfx_device_gl::Resources>,
+    gfx_device_gl::Output>;
 
 /// Contains everything required for controlling window, graphics, event loop.
 pub struct PistonWindow<W: Window = GlutinWindow, T = ()> {
@@ -127,7 +130,8 @@ impl<W, T> PistonWindow<W, T>
     /// Renders 2D graphics.
     pub fn draw_2d<F>(&self, f: F) where
         F: FnOnce(Context, &mut GfxGraphics<
-            gfx_device_gl::Resources, gfx_device_gl::CommandBuffer,
+            gfx_device_gl::Resources,
+            gfx_device_gl::CommandBuffer<gfx_device_gl::Resources>,
             gfx_device_gl::Output>)
     {
         use piston::event::RenderEvent;
