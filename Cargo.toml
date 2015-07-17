@@ -17,8 +17,8 @@ name = "piston_window"
 
 
 [dependencies]
-gfx = "0.6.4"
-gfx_device_gl = "0.4.0"
+gfx = "0.6.5"
+gfx_device_gl = "0.4.1"
 piston = "0.4.1"
 piston2d-gfx_graphics = "0.4.0"
 piston2d-graphics = "0.4.0"
