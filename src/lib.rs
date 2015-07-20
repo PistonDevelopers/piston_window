@@ -36,7 +36,7 @@ pub type G2d<'a> = GfxGraphics<'a,
     gfx_device_gl::Output>;
 
 /// Contains everything required for controlling window, graphics, event loop.
-pub struct PistonWindow<W: Window = GlutinWindow, T = ()> {
+pub struct PistonWindow<T = (), W: Window = GlutinWindow> {
     /// The window.
     pub window: Rc<RefCell<W>>,
     /// GFX stream.
@@ -55,16 +55,16 @@ pub struct PistonWindow<W: Window = GlutinWindow, T = ()> {
     pub factory: Rc<RefCell<gfx_device_gl::Factory>>,
 }
 
-impl<T> From<WindowSettings> for PistonWindow<T>
-    where T: Window + OpenGLWindow + From<WindowSettings>,
-          T::Event: GenericEvent
+impl<W> From<WindowSettings> for PistonWindow<(), W>
+    where W: Window + OpenGLWindow + From<WindowSettings>,
+          W::Event: GenericEvent
 {
-    fn from(settings: WindowSettings) -> PistonWindow<T> {
+    fn from(settings: WindowSettings) -> PistonWindow<(), W> {
         PistonWindow::new(Rc::new(RefCell::new(settings.into())), empty_app())
     }
 }
 
-impl<W, T> Clone for PistonWindow<W, T>
+impl<T, W> Clone for PistonWindow<T, W>
     where W: Window, W::Event: Clone
 {
     fn clone(&self) -> Self {
@@ -81,7 +81,7 @@ impl<W, T> Clone for PistonWindow<W, T>
     }
 }
 
-impl<W, T> PistonWindow<W, T>
+impl<T, W> PistonWindow<T, W>
     where W: Window, W::Event: GenericEvent
 {
     /// Creates a new piston object.
@@ -114,7 +114,7 @@ impl<W, T> PistonWindow<W, T>
     }
 
     /// Changes application structure.
-    pub fn app<U>(self, app: Rc<RefCell<U>>) -> PistonWindow<W, U> {
+    pub fn app<U>(self, app: Rc<RefCell<U>>) -> PistonWindow<U, W> {
         PistonWindow {
             window: self.window,
             stream: self.stream,
@@ -164,12 +164,12 @@ impl<W, T> PistonWindow<W, T>
     }
 }
 
-impl<W, T> Iterator for PistonWindow<W, T>
+impl<T, W> Iterator for PistonWindow<T, W>
     where W: Window, W::Event: GenericEvent
 {
-    type Item = PistonWindow<W, T>;
+    type Item = PistonWindow<T, W>;
 
-    fn next(&mut self) -> Option<PistonWindow<W, T>> {
+    fn next(&mut self) -> Option<PistonWindow<T, W>> {
         use piston::event::*;
 
         if let Some(e) = self.events.borrow_mut().next() {
@@ -199,7 +199,7 @@ impl<W, T> Iterator for PistonWindow<W, T>
     }
 }
 
-impl<W, T> GenericEvent for PistonWindow<W, T>
+impl<T, W> GenericEvent for PistonWindow<T, W>
     where W: Window, W::Event: GenericEvent
 {
     fn event_id(&self) -> EventId {
@@ -236,7 +236,7 @@ impl<W, T> GenericEvent for PistonWindow<W, T>
     }
 }
 
-impl<W, T> Window for PistonWindow<W, T>
+impl<T, W> Window for PistonWindow<T, W>
     where W: Window
 {
     type Event = <W as Window>::Event;
@@ -250,7 +250,7 @@ impl<W, T> Window for PistonWindow<W, T>
     }
 }
 
-impl<W, T> AdvancedWindow for PistonWindow<W, T>
+impl<T, W> AdvancedWindow for PistonWindow<T, W>
     where W: AdvancedWindow
 {
     fn get_title(&self) -> String { self.window.borrow().get_title() }
@@ -266,7 +266,7 @@ impl<W, T> AdvancedWindow for PistonWindow<W, T>
     }
 }
 
-impl<W, T> EventLoop for PistonWindow<W, T>
+impl<T, W> EventLoop for PistonWindow<T, W>
     where W: Window
 {
     fn set_ups(&mut self, frames: u64) {
