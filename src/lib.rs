@@ -127,6 +127,12 @@ impl<T, W> PistonWindow<T, W>
         }
     }
 
+    /// Changes application structure.
+    #[inline(always)]
+    pub fn app_by_value<U>(self, app: U) -> PistonWindow<U, W> {
+        self.app(Rc::new(RefCell::new(app)))
+    }
+
     /// Renders 2D graphics.
     pub fn draw_2d<F>(&self, f: F) where
         F: FnOnce(Context, &mut GfxGraphics<
