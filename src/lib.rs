@@ -14,8 +14,8 @@ use glutin_window::GlutinWindow;
 pub use shader_version::OpenGL;
 pub use graphics::*;
 pub use piston::window::*;
-pub use piston::event::*;
 pub use piston::input::*;
+pub use piston::event_loop::*;
 pub use gfx_graphics::{ Texture, TextureSettings, Flip };
 
 use std::cell::RefCell;
@@ -88,7 +88,7 @@ impl<T, W> PistonWindow<T, W>
     pub fn new(window: Rc<RefCell<W>>, app: Rc<RefCell<T>>) -> Self
         where W: OpenGLWindow
     {
-        use piston::event::Events;
+        use piston::event_loop::Events;
         use piston::window::{ OpenGLWindow, Window };
 
         let (device, mut factory) =
@@ -140,7 +140,7 @@ impl<T, W> PistonWindow<T, W>
             gfx_device_gl::CommandBuffer<gfx_device_gl::Resources>,
             gfx_device_gl::Output>)
     {
-        use piston::event::RenderEvent;
+        use piston::input::RenderEvent;
 
         if let Some(ref e) = self.event {
             if let Some(args) = e.render_args() {
@@ -158,7 +158,7 @@ impl<T, W> PistonWindow<T, W>
     pub fn draw_3d<F>(&self, f: F) where
         F: FnOnce(&mut GfxStream)
     {
-        use piston::event::RenderEvent;
+        use piston::input::RenderEvent;
 
         if let Some(ref e) = self.event {
             if let Some(_) = e.render_args() {
@@ -176,7 +176,7 @@ impl<T, W> Iterator for PistonWindow<T, W>
     type Item = PistonWindow<T, W>;
 
     fn next(&mut self) -> Option<PistonWindow<T, W>> {
-        use piston::event::*;
+        use piston::input::*;
 
         if let Some(e) = self.events.borrow_mut().next() {
             if let Some(_) = e.after_render_args() {
