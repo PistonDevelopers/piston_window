@@ -184,9 +184,11 @@ impl<T, W> Iterator for PistonWindow<T, W>
                 self.device.borrow_mut().cleanup();
             }
 
-            if let Some(_) = e.resize_args() {
-                let mut stream = self.stream.borrow_mut();
-                let draw_size = self.window.borrow().draw_size();
+            // Check whether window has resized and update the output.
+            let mut stream = self.stream.borrow_mut();
+            let draw_size = self.window.borrow().draw_size();
+            if stream.out.width != draw_size.width as u16 ||
+               stream.out.height != draw_size.height as u16 {
                 stream.out.width = draw_size.width as u16;
                 stream.out.height = draw_size.height as u16;
             }
