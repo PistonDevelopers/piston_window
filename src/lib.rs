@@ -250,6 +250,7 @@ impl<T, W> Window for PistonWindow<T, W>
     type Event = <W as Window>::Event;
 
     fn should_close(&self) -> bool { self.window.borrow().should_close() }
+    fn set_should_close(&mut self, value: bool) { self.window.borrow_mut().set_should_close(value) }
     fn size(&self) -> Size { self.window.borrow().size() }
     fn draw_size(&self) -> Size { self.window.borrow().draw_size() }
     fn swap_buffers(&mut self) { self.window.borrow_mut().swap_buffers() }
