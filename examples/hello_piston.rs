@@ -5,7 +5,8 @@ use piston_window::*;
 fn main() {
     let window: PistonWindow = WindowSettings::new("Hello Piston!", [640, 480])
         .exit_on_esc(true)
-        .into();
+        .build()
+        .unwrap();
     println!("Press any button to enter inner loop");
     for e in window {
         e.draw_2d(|_c, g| {
