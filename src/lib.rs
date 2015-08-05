@@ -55,12 +55,13 @@ pub struct PistonWindow<T = (), W: Window = GlutinWindow> {
     pub factory: Rc<RefCell<gfx_device_gl::Factory>>,
 }
 
-impl<W> From<WindowSettings> for PistonWindow<(), W>
-    where W: Window + OpenGLWindow + From<WindowSettings>,
+impl<W> BuildFromWindowSettings for PistonWindow<(), W>
+    where W: Window + OpenGLWindow + BuildFromWindowSettings,
           W::Event: GenericEvent
 {
-    fn from(settings: WindowSettings) -> PistonWindow<(), W> {
-        PistonWindow::new(Rc::new(RefCell::new(settings.into())), empty_app())
+    fn build_from_window_settings(settings: WindowSettings)
+    -> Result<PistonWindow<(), W>, String> {
+        Ok(PistonWindow::new(Rc::new(RefCell::new(try!(settings.build()))), empty_app()))
     }
 }
 
