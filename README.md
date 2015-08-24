@@ -16,8 +16,10 @@ We have now released 0.2!
 extern crate piston_window;
 use piston_window::*;
 fn main() {
-    let window: PistonWindow = WindowSettings::new("Hello Piston!", [640, 480])
-        .exit_on_esc(true).into();
+    let window: PistonWindow = WindowSettings::new("Hello Piston!", (640, 480))
+        .exit_on_esc(true)
+        .build()
+        .unwrap_or_else(|e| { panic!("Failed to build PistonWindow: {}", e) });
     for e in window {
         e.draw_2d(|_c, g| {
             clear([0.5, 1.0, 0.5, 1.0], g);
