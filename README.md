@@ -35,8 +35,8 @@ and then implement it for `PistonWindow`.
 but you can change to another back-end, for example SDL2 or GLFW by changing the type parameter:
 
 ```Rust
-let window: PistonWindow<Sdl2Window> = WindowSettings::new("Hello Piston!", [640, 480])
-    .exit_on_esc(true).into();
+let window: PistonWindow<(), Sdl2Window> = WindowSettings::new("Hello Piston!", [640, 480])
+    .exit_on_esc(true).build().unwrap();
 ```
 
 Games often follow a finite state machine logic.
