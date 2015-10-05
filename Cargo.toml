@@ -1,7 +1,7 @@
 [package]
 
 name = "piston_window"
-version = "0.22.0"
+version = "0.23.0"
 authors = ["bvssvni <bvssvni@gmail.com>"]
 keywords = ["window", "piston"]
 description = "The official Piston window back-end for the Piston game engine"
@@ -19,8 +19,8 @@ name = "piston_window"
 [dependencies]
 gfx = "0.7.0"
 gfx_device_gl = "0.5.0"
-piston = "0.12.0"
+piston = "0.13.0"
 piston2d-gfx_graphics = "0.10.0"
 piston2d-graphics = "0.10.0"
 shader_version = "0.2.0"
-pistoncore-glutin_window = "0.14.0"
+pistoncore-glutin_window = "0.15.0"
