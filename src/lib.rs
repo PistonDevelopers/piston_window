@@ -93,7 +93,7 @@ impl<T, W> PistonWindow<T, W>
         use piston::window::{ OpenGLWindow, Window };
 
         let (device, mut factory) =
-            gfx_device_gl::create(|s| window.borrow_mut().get_proc_address(s));
+            gfx_device_gl::create(|s| window.borrow_mut().get_proc_address(s) as *const _);
 
         let draw_size = window.borrow().draw_size();
         let output = factory.make_fake_output(draw_size.width as u16, draw_size.height as u16);
