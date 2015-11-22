@@ -16,7 +16,7 @@ pub use graphics::*;
 pub use piston::window::*;
 pub use piston::input::*;
 pub use piston::event_loop::*;
-pub use gfx_graphics::{ Texture, TextureSettings, Flip };
+pub use gfx_graphics::{ GlyphError, Texture, TextureSettings, Flip };
 
 use std::cell::RefCell;
 use std::rc::Rc;
