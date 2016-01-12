@@ -46,7 +46,7 @@ pub struct PistonWindow<T = (), W: Window = GlutinWindow> {
     /// Gfx2d.
     pub g2d: Rc<RefCell<Gfx2d<gfx_device_gl::Resources>>>,
     /// The event loop.
-    pub events: Rc<RefCell<WindowEvents<W, Event<W::Event>>>>,
+    pub events: Rc<RefCell<WindowEvents>>,
     /// The event.
     pub event: Option<Event<W::Event>>,
     /// Application structure.
@@ -107,7 +107,7 @@ impl<T, W> PistonWindow<T, W>
             stream: Rc::new(RefCell::new(stream)),
             device: Rc::new(RefCell::new(device)),
             g2d: Rc::new(RefCell::new(g2d)),
-            events: Rc::new(RefCell::new(window.events())),
+            events: Rc::new(RefCell::new(window.borrow().events())),
             event: None,
             app: app,
             factory: Rc::new(RefCell::new(factory)),
@@ -179,7 +179,8 @@ impl<T, W> Iterator for PistonWindow<T, W>
     fn next(&mut self) -> Option<PistonWindow<T, W>> {
         use piston::input::*;
 
-        if let Some(e) = self.events.borrow_mut().next() {
+        let window = &mut *self.window.borrow_mut();
+        if let Some(e) = self.events.borrow_mut().next(window) {
             if let Some(_) = e.after_render_args() {
                 // After swapping buffers.
                 self.device.borrow_mut().cleanup();
@@ -187,7 +188,7 @@ impl<T, W> Iterator for PistonWindow<T, W>
 
             // Check whether window has resized and update the output.
             let mut stream = self.stream.borrow_mut();
-            let draw_size = self.window.borrow().draw_size();
+            let draw_size = window.draw_size();
             if stream.out.width != draw_size.width as u16 ||
                stream.out.height != draw_size.height as u16 {
                 stream.out.width = draw_size.width as u16;
