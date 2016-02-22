@@ -1,6 +1,53 @@
 #![deny(missing_docs)]
 
 //! The official Piston window wrapper for the Piston game engine
+//!
+//! Sets up [Gfx](https://github.com/gfx-rs/gfx) with an OpenGL back-end.  
+//! Uses [gfx_graphics](https://github.com/pistondevelopers/gfx_graphics)
+//! for 2D rendering.  
+//! Uses [glutin_window](https://github.com/pistondevelopers/glutin_window)
+//! as default window back-end, but this can be swapped.  
+//!
+//! sRGB is turned on because it is required by gfx_graphics.
+//!
+//! ### Example
+//!
+//! ```rust
+//! extern crate piston_window;
+//!
+//! use piston_window::*;
+//!
+//! fn main() {
+//!     let window: PistonWindow =
+//!         WindowSettings::new("Hello World!", [512; 2])
+//!             .build().unwrap();
+//!     for e in window {
+//!         e.draw_2d(|c, g| {
+//!             clear([0.5, 0.5, 0.5, 1.0], g);
+//!             rectangle([1.0, 0.0, 0.0, 1.0], // red
+//!                       [0.0, 0.0, 100.0, 100.0], // rectangle
+//!                       c.transform, g);
+//!         });
+//!     }
+//! }
+//! ```
+//!
+//! ### Swap to another window back-end
+//!
+//! Change the second generic parameter to the window back-end you want to use.
+//!
+//! ```ignore
+//! let window: PistonWindow<(), Sdl2Window> =
+//!     WindowSettings::new("title", [512; 2])
+//!         .build().unwrap();
+//! ```
+//!
+//! ### Do not depend on this library
+//!
+//! This library is not meant to be depended on by other libraries.  
+//! Instead, libraries should depend on the lower abstractions,
+//! such as the [Piston core](https://github.com/pistondevelopers/piston).  
+//! The only purpose of this library is to provide a convenient way to get started.  
 
 extern crate piston;
 extern crate gfx;
@@ -46,7 +93,7 @@ pub struct PistonWindow<T = (), W: Window = GlutinWindow> {
     pub device: Rc<RefCell<gfx_device_gl::Device>>,
     /// Output frame buffer.
     pub output_color: Rc<gfx::handle::RenderTargetView<
-        gfx_device_gl::Resources, gfx::format::Rgba8>>,
+        gfx_device_gl::Resources, gfx::format::Srgb8>>,
     /// Output stencil buffer.
     pub output_stencil: Rc<gfx::handle::DepthStencilView<
         gfx_device_gl::Resources, gfx::format::DepthStencil>>,
@@ -66,8 +113,11 @@ impl<W> BuildFromWindowSettings for PistonWindow<(), W>
     where W: Window + OpenGLWindow + BuildFromWindowSettings,
           W::Event: GenericEvent
 {
-    fn build_from_window_settings(settings: WindowSettings)
+    fn build_from_window_settings(mut settings: WindowSettings)
     -> Result<PistonWindow<(), W>, String> {
+        // Turn on sRGB.
+        settings = settings.srgb(true);
+
         // Use OpenGL 3.2 by default, because this is what window backends
         // usually do.
         let opengl = settings.get_maybe_opengl().unwrap_or(OpenGL::V3_2);
