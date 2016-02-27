@@ -5,8 +5,6 @@ Piston-Window is designed for only one purpose: Convenience.
 
 [Documentation](http://docs.piston.rs/piston_window/piston_window/)
 
-We have now released 0.2!
-
 * Reexports everything you need to write 2D interactive applications
 * `.draw_2d` for drawing 2D, and `.draw_3d` for drawing 3D
 * Uses Gfx to work with 3D libraries in the Piston ecosystem
