@@ -2,13 +2,16 @@
 
 //! The official Piston window wrapper for the Piston game engine
 //!
-//! Sets up [Gfx](https://github.com/gfx-rs/gfx) with an OpenGL back-end.  
-//! Uses [gfx_graphics](https://github.com/pistondevelopers/gfx_graphics)
-//! for 2D rendering.  
-//! Uses [glutin_window](https://github.com/pistondevelopers/glutin_window)
-//! as default window back-end, but this can be swapped.  
+//! The purpose of this library is to provide an easy-to-use,
+//! simple-to-get-started and convenient-for-applications API for Piston.
 //!
-//! sRGB is turned on because it is required by gfx_graphics.
+//! Sets up:
+//!
+//! - [Gfx](https://github.com/gfx-rs/gfx) with an OpenGL back-end.
+//! - [gfx_graphics](https://github.com/pistondevelopers/gfx_graphics)
+//! for 2D rendering.
+//! - [glutin_window](https://github.com/pistondevelopers/glutin_window)
+//! as default window back-end, but this can be swapped (see below).
 //!
 //! ### Example
 //!
@@ -42,12 +45,24 @@
 //!         .build().unwrap();
 //! ```
 //!
-//! ### Do not depend on this library
+//! ### sRGB
+//!
+//! The impl of `BuildFromWindowSettings` in this library turns on
+//! `WindowSettings::srgb`, because it is required by gfx_graphics.
+//!
+//! Most images such as those found on the internet uses sRGB,
+//! that has a non-linear gamma corrected space.
+//! When rendering 3D, make sure textures and colors are in linear gamma space.
+//! Alternative is to use `Srgb8` and `Srgba8` formats for textures.
+//!
+//! For more information about sRGB, see
+//! https://github.com/PistonDevelopers/piston/issues/1014
+//!
+//! ### Library dependencies
 //!
 //! This library is not meant to be depended on by other libraries.  
 //! Instead, libraries should depend on the lower abstractions,
-//! such as the [Piston core](https://github.com/pistondevelopers/piston).  
-//! The only purpose of this library is to provide a convenient way to get started.  
+//! such as the [Piston core](https://github.com/pistondevelopers/piston).
 
 extern crate piston;
 extern crate gfx;
