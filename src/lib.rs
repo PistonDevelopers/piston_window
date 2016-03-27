@@ -60,7 +60,7 @@
 //!
 //! ### Library dependencies
 //!
-//! This library is not meant to be depended on by other libraries.  
+//! This library is not meant to be depended on by other libraries.
 //! Instead, libraries should depend on the lower abstractions,
 //! such as the [Piston core](https://github.com/pistondevelopers/piston).
 
@@ -89,14 +89,14 @@ use gfx_graphics::{ Gfx2d, GfxGraphics };
 
 /// Actual gfx::Stream implementation carried by the window.
 pub type GfxEncoder = gfx::Encoder<gfx_device_gl::Resources,
-    gfx_device_gl::command::CommandBuffer>;
+    gfx_device_gl::CommandBuffer>;
 /// Glyph cache.
 pub type Glyphs = gfx_graphics::GlyphCache<gfx_device_gl::Resources,
     gfx_device_gl::Factory>;
 /// 2D graphics.
 pub type G2d<'a> = GfxGraphics<'a,
     gfx_device_gl::Resources,
-    gfx_device_gl::command::CommandBuffer>;
+    gfx_device_gl::CommandBuffer>;
 /// Texture type compatible with `G2d`.
 pub type G2dTexture<'a> = Texture<gfx_device_gl::Resources>;
 
@@ -110,7 +110,7 @@ pub struct PistonWindow<T = (), W: Window = GlutinWindow> {
     pub device: Rc<RefCell<gfx_device_gl::Device>>,
     /// Output frame buffer.
     pub output_color: Rc<gfx::handle::RenderTargetView<
-        gfx_device_gl::Resources, gfx::format::Srgb8>>,
+        gfx_device_gl::Resources, gfx::format::Srgba8>>,
     /// Output stencil buffer.
     pub output_stencil: Rc<gfx::handle::DepthStencilView<
         gfx_device_gl::Resources, gfx::format::DepthStencil>>,
@@ -164,6 +164,25 @@ impl<T, W> Clone for PistonWindow<T, W>
     }
 }
 
+fn create_main_targets(dim: gfx::tex::Dimensions) ->
+(Rc<gfx::handle::RenderTargetView<
+    gfx_device_gl::Resources, gfx::format::Srgba8>>,
+ Rc<gfx::handle::DepthStencilView<
+    gfx_device_gl::Resources, gfx::format::DepthStencil>>) {
+    use gfx::core::factory::Typed;
+    use gfx::format::{DepthStencil, Format, Formatted, Srgba8};
+
+    let color_format: Format = <Srgba8 as Formatted>::get_format();
+    let depth_format: Format = <DepthStencil as Formatted>::get_format();
+    let (output_color, output_stencil) =
+        gfx_device_gl::create_main_targets_raw(dim,
+                                               color_format.0,
+                                               depth_format.0);
+    let output_color = Typed::new(output_color);
+    let output_stencil = Typed::new(output_stencil);
+    (Rc::new(output_color), Rc::new(output_stencil))
+}
+
 impl<T, W> PistonWindow<T, W>
     where W: Window, W::Event: GenericEvent
 {
@@ -178,25 +197,28 @@ impl<T, W> PistonWindow<T, W>
     {
         use piston::event_loop::Events;
         use piston::window::{ OpenGLWindow, Window };
+        use gfx::core::factory::Typed;
 
         let (device, mut factory) =
             gfx_device_gl::create(|s|
                 window.borrow_mut().get_proc_address(s) as *const _);
 
-        let draw_size = window.borrow().draw_size();
-        let aa = samples as gfx::tex::NumSamples;
-        let dim = (draw_size.width as u16, draw_size.height as u16,
-                   1, aa.into());
-        let (output_color, output_stencil) =
-            gfx_device_gl::create_main_targets(dim);
+        let (output_color, output_stencil) = {
+            let aa = samples as gfx::tex::NumSamples;
+            let draw_size = window.borrow().draw_size();
+            let dim = (draw_size.width as u16, draw_size.height as u16,
+                       1, aa.into());
+            create_main_targets(dim)
+        };
+
         let g2d = Gfx2d::new(opengl, &mut factory);
-        let encoder = factory.create_encoder();
+        let encoder = factory.create_command_buffer().into();
         PistonWindow {
             window: window.clone(),
             encoder: Rc::new(RefCell::new(encoder)),
             device: Rc::new(RefCell::new(device)),
-            output_color: Rc::new(output_color),
-            output_stencil: Rc::new(output_stencil),
+            output_color: output_color,
+            output_stencil: output_stencil,
             g2d: Rc::new(RefCell::new(g2d)),
             events: Rc::new(RefCell::new(window.borrow().events())),
             event: None,
@@ -236,7 +258,6 @@ impl<T, W> PistonWindow<T, W>
         if let Some(ref e) = self.event {
             if let Some(args) = e.render_args() {
                 let mut encoder = self.encoder.borrow_mut();
-                encoder.reset();
                 self.g2d.borrow_mut().draw(
                     &mut encoder,
                     &self.output_color,
@@ -244,7 +265,8 @@ impl<T, W> PistonWindow<T, W>
                     args.viewport(),
                     f
                 );
-                self.device.borrow_mut().submit(encoder.as_buffer());
+                let mut device = self.device.borrow_mut();
+                encoder.flush(&mut *device);
             }
         }
     }
@@ -258,9 +280,9 @@ impl<T, W> PistonWindow<T, W>
         if let Some(ref e) = self.event {
             if let Some(_) = e.render_args() {
                 let mut encoder = self.encoder.borrow_mut();
-                encoder.reset();
                 f(&mut *encoder);
-                self.device.borrow_mut().submit(encoder.as_buffer());
+                let mut device = self.device.borrow_mut();
+                encoder.flush(&mut *device);
             }
         }
     }
@@ -273,7 +295,7 @@ impl<T, W> Iterator for PistonWindow<T, W>
 
     fn next(&mut self) -> Option<PistonWindow<T, W>> {
         use piston::input::*;
-        use gfx::core::factory::Phantom;
+        use gfx::core::factory::Typed;
 
         let window = &mut *self.window.borrow_mut();
         if let Some(e) = self.events.borrow_mut().next(window) {
@@ -291,9 +313,7 @@ impl<T, W> Iterator for PistonWindow<T, W>
                     let dim = (draw_size.width as u16,
                                draw_size.height as u16,
                                dim.2, dim.3);
-                    let (output_color, output_stencil) =
-                        gfx_device_gl::create_main_targets(dim);
-                    (Rc::new(output_color), Rc::new(output_stencil))
+                    create_main_targets(dim)
                 } else {
                     (self.output_color.clone(), self.output_stencil.clone())
                 };
