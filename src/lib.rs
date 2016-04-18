@@ -89,10 +89,6 @@ pub use piston::input::*;
 pub use piston::event_loop::*;
 pub use gfx_graphics::{ GlyphError, Texture, TextureSettings, Flip };
 
-use std::cell::RefCell;
-use std::rc::Rc;
-use std::any::Any;
-
 use gfx_graphics::{ Gfx2d, GfxGraphics };
 
 /// Actual gfx::Stream implementation carried by the window.
@@ -111,7 +107,7 @@ pub type G2dTexture<'a> = Texture<gfx_device_gl::Resources>;
 /// Contains everything required for controlling window, graphics, event loop.
 pub struct PistonWindow<T = (), W: Window = GlutinWindow> {
     /// The window.
-    pub window: Rc<RefCell<W>>,
+    pub window: W,
     /// GFX encoder.
     pub encoder: GfxEncoder,
     /// GFX device.
@@ -145,7 +141,7 @@ impl<W> BuildFromWindowSettings for PistonWindow<(), W>
         let samples = settings.get_samples();
 
         Ok(PistonWindow::new(opengl, samples,
-            Rc::new(RefCell::new(try!(settings.build()))), empty_app()))
+            try!(settings.build()), ()))
     }
 }
 
@@ -175,7 +171,7 @@ impl<T, W> PistonWindow<T, W>
     pub fn new(
         opengl: OpenGL,
         samples: u8,
-        window: Rc<RefCell<W>>,
+        mut window: W,
         app: T
     ) -> Self
         where W: OpenGLWindow
@@ -185,11 +181,11 @@ impl<T, W> PistonWindow<T, W>
 
         let (device, mut factory) =
             gfx_device_gl::create(|s|
-                window.borrow_mut().get_proc_address(s) as *const _);
+                window.get_proc_address(s) as *const _);
 
         let (output_color, output_stencil) = {
             let aa = samples as gfx::tex::NumSamples;
-            let draw_size = window.borrow().draw_size();
+            let draw_size = window.draw_size();
             let dim = (draw_size.width as u16, draw_size.height as u16,
                        1, aa.into());
             create_main_targets(dim)
@@ -198,7 +194,7 @@ impl<T, W> PistonWindow<T, W>
         let g2d = Gfx2d::new(opengl, &mut factory);
         let encoder = factory.create_command_buffer().into();
         PistonWindow {
-            window: window.clone(),
+            window: window,
             encoder: encoder,
             device: device,
             output_color: output_color,
@@ -223,15 +219,10 @@ impl<T, W> PistonWindow<T, W>
         }
     }
 
-    /// Changes application structure.
-    #[inline(always)]
-    pub fn app_by_value<U>(self, app: U) -> PistonWindow<U, W> {
-        self.app(app)
-    }
-
     /// Renders 2D graphics.
-    pub fn draw_2d<F>(&mut self, e: &Event, f: F) where
-        F: FnOnce(Context, &mut G2d)
+    pub fn draw_2d<F, E>(&mut self, e: &E, f: F) where
+        F: FnOnce(Context, &mut G2d),
+        E: GenericEvent
     {
         use piston::input::RenderEvent;
 
@@ -248,8 +239,9 @@ impl<T, W> PistonWindow<T, W>
     }
 
     /// Renders 3D graphics.
-    pub fn draw_3d<F>(&mut self, e: &Event, f: F) where
-        F: FnOnce(&mut GfxEncoder)
+    pub fn draw_3d<F, E>(&mut self, e: &E, f: F) where
+        F: FnOnce(&mut GfxEncoder),
+        E: GenericEvent
     {
         use piston::input::RenderEvent;
 
@@ -265,33 +257,30 @@ impl<T, W> Window for PistonWindow<T, W>
 {
     type Event = <W as Window>::Event;
 
-    fn should_close(&self) -> bool { self.window.borrow().should_close() }
+    fn should_close(&self) -> bool { self.window.should_close() }
     fn set_should_close(&mut self, value: bool) {
-        self.window.borrow_mut().set_should_close(value)
+        self.window.set_should_close(value)
     }
-    fn size(&self) -> Size { self.window.borrow().size() }
-    fn draw_size(&self) -> Size { self.window.borrow().draw_size() }
-    fn swap_buffers(&mut self) { self.window.borrow_mut().swap_buffers() }
+    fn size(&self) -> Size { self.window.size() }
+    fn draw_size(&self) -> Size { self.window.draw_size() }
+    fn swap_buffers(&mut self) { self.window.swap_buffers() }
     fn poll_event(&mut self) -> Option<Self::Event> {
-        Window::poll_event(&mut *self.window.borrow_mut())
+        Window::poll_event(&mut self.window)
     }
 }
 
 impl<T, W> AdvancedWindow for PistonWindow<T, W>
     where W: AdvancedWindow
 {
-    fn get_title(&self) -> String { self.window.borrow().get_title() }
+    fn get_title(&self) -> String { self.window.get_title() }
     fn set_title(&mut self, title: String) {
-        self.window.borrow_mut().set_title(title)
+        self.window.set_title(title)
     }
-    fn get_exit_on_esc(&self) -> bool { self.window.borrow().get_exit_on_esc() }
+    fn get_exit_on_esc(&self) -> bool { self.window.get_exit_on_esc() }
     fn set_exit_on_esc(&mut self, value: bool) {
-        self.window.borrow_mut().set_exit_on_esc(value)
+        self.window.set_exit_on_esc(value)
     }
     fn set_capture_cursor(&mut self, value: bool) {
-        self.window.borrow_mut().set_capture_cursor(value)
+        self.window.set_capture_cursor(value)
     }
 }
-
-/// Creates a new empty application.
-pub fn empty_app() -> () { () }
