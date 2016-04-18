@@ -84,7 +84,6 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::any::Any;
 
-use gfx::traits::*;
 use gfx_graphics::{ Gfx2d, GfxGraphics };
 
 /// Actual gfx::Stream implementation carried by the window.
@@ -116,10 +115,6 @@ pub struct PistonWindow<T = (), W: Window = GlutinWindow> {
         gfx_device_gl::Resources, gfx::format::DepthStencil>>,
     /// Gfx2d.
     pub g2d: Rc<RefCell<Gfx2d<gfx_device_gl::Resources>>>,
-    /// The event loop.
-    pub events: Rc<RefCell<WindowEvents>>,
-    /// The event.
-    pub event: Option<Event<W::Event>>,
     /// Application structure.
     pub app: Rc<RefCell<T>>,
     /// The factory that was created along with the device.
@@ -156,8 +151,6 @@ impl<T, W> Clone for PistonWindow<T, W>
             output_color: self.output_color.clone(),
             output_stencil: self.output_stencil.clone(),
             g2d: self.g2d.clone(),
-            events: self.events.clone(),
-            event: self.event.clone(),
             app: self.app.clone(),
             factory: self.factory.clone(),
         }
@@ -195,7 +188,6 @@ impl<T, W> PistonWindow<T, W>
     ) -> Self
         where W: OpenGLWindow
     {
-        use piston::event_loop::Events;
         use piston::window::{ OpenGLWindow, Window };
         use gfx::core::factory::Typed;
 
@@ -220,8 +212,6 @@ impl<T, W> PistonWindow<T, W>
             output_color: output_color,
             output_stencil: output_stencil,
             g2d: Rc::new(RefCell::new(g2d)),
-            events: Rc::new(RefCell::new(window.borrow().events())),
-            event: None,
             app: app,
             factory: Rc::new(RefCell::new(factory)),
         }
@@ -236,8 +226,6 @@ impl<T, W> PistonWindow<T, W>
             output_color: self.output_color,
             output_stencil: self.output_stencil,
             g2d: self.g2d,
-            events: self.events,
-            event: self.event,
             app: app,
             factory: self.factory,
         }
@@ -250,130 +238,37 @@ impl<T, W> PistonWindow<T, W>
     }
 
     /// Renders 2D graphics.
-    pub fn draw_2d<F>(&self, f: F) where
+    pub fn draw_2d<F>(&mut self, e: &Event, f: F) where
         F: FnOnce(Context, &mut G2d)
     {
         use piston::input::RenderEvent;
 
-        if let Some(ref e) = self.event {
-            if let Some(args) = e.render_args() {
-                let mut encoder = self.encoder.borrow_mut();
-                self.g2d.borrow_mut().draw(
-                    &mut encoder,
-                    &self.output_color,
-                    &self.output_stencil,
-                    args.viewport(),
-                    f
-                );
-                let mut device = self.device.borrow_mut();
-                encoder.flush(&mut *device);
-            }
+        if let Some(args) = e.render_args() {
+            let mut encoder = self.encoder.borrow_mut();
+            self.g2d.borrow_mut().draw(
+                &mut encoder,
+                &self.output_color,
+                &self.output_stencil,
+                args.viewport(),
+                f
+            );
+            let mut device = self.device.borrow_mut();
+            encoder.flush(&mut *device);
         }
     }
 
     /// Renders 3D graphics.
-    pub fn draw_3d<F>(&self, f: F) where
+    pub fn draw_3d<F>(&mut self, e: &Event, f: F) where
         F: FnOnce(&mut GfxEncoder)
     {
         use piston::input::RenderEvent;
 
-        if let Some(ref e) = self.event {
-            if let Some(_) = e.render_args() {
-                let mut encoder = self.encoder.borrow_mut();
-                f(&mut *encoder);
-                let mut device = self.device.borrow_mut();
-                encoder.flush(&mut *device);
-            }
+        if let Some(_) = e.render_args() {
+            let mut encoder = self.encoder.borrow_mut();
+            f(&mut *encoder);
+            let mut device = self.device.borrow_mut();
+            encoder.flush(&mut *device);
         }
-    }
-}
-
-impl<T, W> Iterator for PistonWindow<T, W>
-    where W: Window, W::Event: GenericEvent
-{
-    type Item = PistonWindow<T, W>;
-
-    fn next(&mut self) -> Option<PistonWindow<T, W>> {
-        use piston::input::*;
-        use gfx::core::factory::Typed;
-
-        let window = &mut *self.window.borrow_mut();
-        if let Some(e) = self.events.borrow_mut().next(window) {
-            if let Some(_) = e.after_render_args() {
-                // After swapping buffers.
-                self.device.borrow_mut().cleanup();
-            }
-
-            // Check whether window has resized and update the output.
-            let dim = self.output_color.raw().get_dimensions();
-            let (w, h) = (dim.0, dim.1);
-            let draw_size = window.draw_size();
-            let (output_color, output_stencil) =
-                if w != draw_size.width as u16 || h != draw_size.height as u16 {
-                    let dim = (draw_size.width as u16,
-                               draw_size.height as u16,
-                               dim.2, dim.3);
-                    create_main_targets(dim)
-                } else {
-                    (self.output_color.clone(), self.output_stencil.clone())
-                };
-
-            Some(PistonWindow {
-                window: self.window.clone(),
-                encoder: self.encoder.clone(),
-                device: self.device.clone(),
-                output_color: output_color,
-                output_stencil: output_stencil,
-                g2d: self.g2d.clone(),
-                events: self.events.clone(),
-                event: Some(e),
-                app: self.app.clone(),
-                factory: self.factory.clone(),
-            })
-        } else { None }
-    }
-}
-
-impl<T, W> GenericEvent for PistonWindow<T, W>
-    where W: Window, W::Event: GenericEvent
-{
-    fn event_id(&self) -> EventId {
-        match self.event {
-            Some(ref e) => e.event_id(),
-            None => EventId("")
-        }
-    }
-
-    fn with_args<'a, F, U>(&'a self, f: F) -> U
-       where F: FnMut(&Any) -> U
-    {
-        self.event.as_ref().unwrap().with_args(f)
-    }
-
-    fn from_args(
-        event_id: EventId,
-        any: &Any,
-        old_event: &Self
-    ) -> Option<Self> {
-        if let Some(ref e) = old_event.event {
-            match GenericEvent::from_args(event_id, any, e) {
-                Some(e) => {
-                    Some(PistonWindow {
-                        window: old_event.window.clone(),
-                        encoder: old_event.encoder.clone(),
-                        device: old_event.device.clone(),
-                        output_color: old_event.output_color.clone(),
-                        output_stencil: old_event.output_stencil.clone(),
-                        g2d: old_event.g2d.clone(),
-                        events: old_event.events.clone(),
-                        event: Some(e),
-                        app: old_event.app.clone(),
-                        factory: old_event.factory.clone(),
-                    })
-                }
-                None => None
-            }
-        } else { None }
     }
 }
 
@@ -407,26 +302,6 @@ impl<T, W> AdvancedWindow for PistonWindow<T, W>
     }
     fn set_capture_cursor(&mut self, value: bool) {
         self.window.borrow_mut().set_capture_cursor(value)
-    }
-}
-
-impl<T, W> EventLoop for PistonWindow<T, W>
-    where W: Window
-{
-    fn set_ups(&mut self, frames: u64) {
-        self.events.borrow_mut().set_ups(frames);
-    }
-
-    fn set_max_fps(&mut self, frames: u64) {
-        self.events.borrow_mut().set_max_fps(frames);
-    }
-
-    fn set_swap_buffers(&mut self, enable: bool) {
-        self.events.borrow_mut().set_swap_buffers(enable);
-    }
-
-    fn set_bench_mode(&mut self, enable: bool) {
-        self.events.borrow_mut().set_bench_mode(enable);
     }
 }
 
