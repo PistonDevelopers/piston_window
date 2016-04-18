@@ -3,11 +3,11 @@ extern crate piston_window;
 use piston_window::*;
 
 fn main() {
-    let mut events: WindowEvents = WindowEvents::new();
     let mut window: PistonWindow = WindowSettings::new("Hello Piston!", [640, 480])
         .exit_on_esc(true)
         .build()
         .unwrap_or_else(|e| { panic!("Failed to build PistonWindow: {}", e) });
+    let mut events: WindowEvents = window.events();
     println!("Press any button to enter inner loop");
     while let Some(e) =  events.next(&mut window) {
         window.draw_2d(&e, |_c, g| {
