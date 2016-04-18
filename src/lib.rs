@@ -104,21 +104,21 @@ pub struct PistonWindow<T = (), W: Window = GlutinWindow> {
     /// The window.
     pub window: Rc<RefCell<W>>,
     /// GFX encoder.
-    pub encoder: Rc<RefCell<GfxEncoder>>,
+    pub encoder: GfxEncoder,
     /// GFX device.
-    pub device: Rc<RefCell<gfx_device_gl::Device>>,
+    pub device: gfx_device_gl::Device,
     /// Output frame buffer.
-    pub output_color: Rc<gfx::handle::RenderTargetView<
-        gfx_device_gl::Resources, gfx::format::Srgba8>>,
+    pub output_color: gfx::handle::RenderTargetView<
+        gfx_device_gl::Resources, gfx::format::Srgba8>,
     /// Output stencil buffer.
-    pub output_stencil: Rc<gfx::handle::DepthStencilView<
-        gfx_device_gl::Resources, gfx::format::DepthStencil>>,
+    pub output_stencil: gfx::handle::DepthStencilView<
+        gfx_device_gl::Resources, gfx::format::DepthStencil>,
     /// Gfx2d.
-    pub g2d: Rc<RefCell<Gfx2d<gfx_device_gl::Resources>>>,
+    pub g2d: Gfx2d<gfx_device_gl::Resources>,
     /// Application structure.
-    pub app: Rc<RefCell<T>>,
+    pub app: T,
     /// The factory that was created along with the device.
-    pub factory: Rc<RefCell<gfx_device_gl::Factory>>,
+    pub factory: gfx_device_gl::Factory,
 }
 
 impl<W> BuildFromWindowSettings for PistonWindow<(), W>
@@ -140,28 +140,11 @@ impl<W> BuildFromWindowSettings for PistonWindow<(), W>
     }
 }
 
-impl<T, W> Clone for PistonWindow<T, W>
-    where W: Window, W::Event: Clone
-{
-    fn clone(&self) -> Self {
-        PistonWindow {
-            window: self.window.clone(),
-            encoder: self.encoder.clone(),
-            device: self.device.clone(),
-            output_color: self.output_color.clone(),
-            output_stencil: self.output_stencil.clone(),
-            g2d: self.g2d.clone(),
-            app: self.app.clone(),
-            factory: self.factory.clone(),
-        }
-    }
-}
-
 fn create_main_targets(dim: gfx::tex::Dimensions) ->
-(Rc<gfx::handle::RenderTargetView<
-    gfx_device_gl::Resources, gfx::format::Srgba8>>,
- Rc<gfx::handle::DepthStencilView<
-    gfx_device_gl::Resources, gfx::format::DepthStencil>>) {
+(gfx::handle::RenderTargetView<
+    gfx_device_gl::Resources, gfx::format::Srgba8>,
+ gfx::handle::DepthStencilView<
+    gfx_device_gl::Resources, gfx::format::DepthStencil>) {
     use gfx::core::factory::Typed;
     use gfx::format::{DepthStencil, Format, Formatted, Srgba8};
 
@@ -173,7 +156,7 @@ fn create_main_targets(dim: gfx::tex::Dimensions) ->
                                                depth_format.0);
     let output_color = Typed::new(output_color);
     let output_stencil = Typed::new(output_stencil);
-    (Rc::new(output_color), Rc::new(output_stencil))
+    (output_color, output_stencil)
 }
 
 impl<T, W> PistonWindow<T, W>
@@ -184,7 +167,7 @@ impl<T, W> PistonWindow<T, W>
         opengl: OpenGL,
         samples: u8,
         window: Rc<RefCell<W>>,
-        app: Rc<RefCell<T>>
+        app: T
     ) -> Self
         where W: OpenGLWindow
     {
@@ -207,18 +190,18 @@ impl<T, W> PistonWindow<T, W>
         let encoder = factory.create_command_buffer().into();
         PistonWindow {
             window: window.clone(),
-            encoder: Rc::new(RefCell::new(encoder)),
-            device: Rc::new(RefCell::new(device)),
+            encoder: encoder,
+            device: device,
             output_color: output_color,
             output_stencil: output_stencil,
-            g2d: Rc::new(RefCell::new(g2d)),
+            g2d: g2d,
             app: app,
-            factory: Rc::new(RefCell::new(factory)),
+            factory: factory,
         }
     }
 
     /// Changes application structure.
-    pub fn app<U>(self, app: Rc<RefCell<U>>) -> PistonWindow<U, W> {
+    pub fn app<U>(self, app: U) -> PistonWindow<U, W> {
         PistonWindow {
             window: self.window,
             encoder: self.encoder,
@@ -234,7 +217,7 @@ impl<T, W> PistonWindow<T, W>
     /// Changes application structure.
     #[inline(always)]
     pub fn app_by_value<U>(self, app: U) -> PistonWindow<U, W> {
-        self.app(Rc::new(RefCell::new(app)))
+        self.app(app)
     }
 
     /// Renders 2D graphics.
@@ -244,16 +227,14 @@ impl<T, W> PistonWindow<T, W>
         use piston::input::RenderEvent;
 
         if let Some(args) = e.render_args() {
-            let mut encoder = self.encoder.borrow_mut();
-            self.g2d.borrow_mut().draw(
-                &mut encoder,
+            self.g2d.draw(
+                &mut self.encoder,
                 &self.output_color,
                 &self.output_stencil,
                 args.viewport(),
                 f
             );
-            let mut device = self.device.borrow_mut();
-            encoder.flush(&mut *device);
+            self.encoder.flush(&mut self.device);
         }
     }
 
@@ -264,10 +245,8 @@ impl<T, W> PistonWindow<T, W>
         use piston::input::RenderEvent;
 
         if let Some(_) = e.render_args() {
-            let mut encoder = self.encoder.borrow_mut();
-            f(&mut *encoder);
-            let mut device = self.device.borrow_mut();
-            encoder.flush(&mut *device);
+            f(&mut self.encoder);
+            self.encoder.flush(&mut self.device);
         }
     }
 }
@@ -306,4 +285,4 @@ impl<T, W> AdvancedWindow for PistonWindow<T, W>
 }
 
 /// Creates a new empty application.
-pub fn empty_app() -> Rc<RefCell<()>> { Rc::new(RefCell::new(())) }
+pub fn empty_app() -> () { () }
