@@ -15,19 +15,35 @@ fn main() {
         });
 
         if e.press_args().is_some() {
-            window.set_title("Inner loop (press X to exit inner loop)".into());
-            while let Some(e) = window.next() {
-                window.draw_2d(&e, |c, g| {
-                    clear([0.5, 0.5, 1.0, 1.0], g);
-                    ellipse([1.0, 0.0, 0.0, 1.0], [50.0, 50.0, 100.0, 100.0], c.transform, g);
-                });
-
-                // Inner loop.
-                if let Some(Button::Keyboard(Key::X)) = e.press_args() {
-                    break;
-                }
-            }
+            window = inner_event_loop(window.app(InnerApp {
+                title: "Inner loop (press X to exit inner loop)",
+                exit_button: Button::Keyboard(Key::X),
+            }));
             window.set_title(title.into());
         }
     }
+}
+
+/// Stores application state of inner event loop.
+pub struct InnerApp {
+    pub title: &'static str,
+    pub exit_button: Button,
+}
+
+fn inner_event_loop(mut window: PistonWindow<InnerApp>) -> PistonWindow {
+    window.set_title(window.app.title.into());
+    while let Some(e) = window.next() {
+        window.draw_2d(&e, |c, g| {
+            clear([0.5, 0.5, 1.0, 1.0], g);
+            ellipse([1.0, 0.0, 0.0, 1.0], [50.0, 50.0, 100.0, 100.0], c.transform, g);
+        });
+        if let Some(button) = e.press_args() {
+            if button == window.app.exit_button {
+                break;
+            }
+        }
+    }
+
+    // Go back to default app state.
+    window.app(())
 }
