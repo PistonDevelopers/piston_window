@@ -24,8 +24,7 @@
 //!     let mut window: PistonWindow =
 //!         WindowSettings::new("Hello World!", [512; 2])
 //!             .build().unwrap();
-//!     let mut events = window.events();
-//!     while let Some(e) = events.next(&mut window) {
+//!     while let Some(e) = window.next() {
 //!         window.draw_2d(&e, |c, g| {
 //!             clear([0.5, 0.5, 0.5, 1.0], g);
 //!             rectangle([1.0, 0.0, 0.0, 1.0], // red
@@ -56,6 +55,25 @@
 //! # }
 //! ```
 //!
+//! ### Change application state
+//!
+//! `PistonWindow` has an `app` method that changes application state.
+//! When you call `app`, it returns `PistonWindow<App>`.
+//! By default, the application state is `()`.
+//!
+//! The idea is to cleanly separate the states of the application from each other.
+//! Many kind of programs on high level can be described as a finite state machine.
+//! Piston's design is focused at external control, where the programmer decides the flow of the
+//! program.
+//!
+//! For example, an adventure game can use different types of event loops for various rooms.
+//! The event loops can vary whether you want to display animations, have a dialogue or navigate.
+//!
+//! For example, a game engine can use one event loop for gameplay,
+//! another for editor mode, and yet another for the game menu.
+//!
+//! For a demonstration of this pattern, see the "hello_piston" example.
+//!
 //! ### sRGB
 //!
 //! The impl of `BuildFromWindowSettings` in this library turns on
@@ -71,7 +89,8 @@
 //!
 //! ### Library dependencies
 //!
-//! This library is not meant to be depended on by other libraries.
+//! This library is meant to be used in applications only.
+//! It is not meant to be depended on by generic libraries.
 //! Instead, libraries should depend on the lower abstractions,
 //! such as the [Piston core](https://github.com/pistondevelopers/piston).
 
@@ -122,6 +141,8 @@ pub struct PistonWindow<T = (), W: Window = GlutinWindow> {
         gfx_device_gl::Resources, gfx::format::DepthStencil>,
     /// Gfx2d.
     pub g2d: Gfx2d<gfx_device_gl::Resources>,
+    /// Event loop state.
+    pub events: WindowEvents,
     /// Application structure.
     pub app: T,
     /// The factory that was created along with the device.
@@ -195,6 +216,7 @@ impl<T, W> PistonWindow<T, W>
 
         let g2d = Gfx2d::new(opengl, &mut factory);
         let encoder = factory.create_command_buffer().into();
+        let events = window.events();
         PistonWindow {
             window: window,
             encoder: encoder,
@@ -202,6 +224,7 @@ impl<T, W> PistonWindow<T, W>
             output_color: output_color,
             output_stencil: output_stencil,
             g2d: g2d,
+            events: events,
             app: app,
             factory: factory,
         }
@@ -216,6 +239,7 @@ impl<T, W> PistonWindow<T, W>
             output_color: self.output_color,
             output_stencil: self.output_stencil,
             g2d: self.g2d,
+            events: self.events,
             app: app,
             factory: self.factory,
         }
@@ -252,6 +276,37 @@ impl<T, W> PistonWindow<T, W>
             self.encoder.flush(&mut self.device);
         }
     }
+
+    /// Returns next event.
+    /// Cleans up after rendering and resizes frame buffers.
+    pub fn next(&mut self) -> Option<Event<<W as Window>::Event>> {
+        use piston::input::*;
+        use gfx::core::factory::Typed;
+        use gfx::Device;
+
+        if let Some(e) = self.events.next(&mut self.window) {
+            if let Some(_) = e.after_render_args() {
+                // After swapping buffers.
+                self.device.cleanup();
+            }
+
+            // Check whether window has resized and update the output.
+            let dim = self.output_color.raw().get_dimensions();
+            let (w, h) = (dim.0, dim.1);
+            let draw_size = self.window.draw_size();
+            if w != draw_size.width as u16 || h != draw_size.height as u16 {
+                let dim = (draw_size.width as u16,
+                           draw_size.height as u16,
+                           dim.2, dim.3);
+                let (output_color, output_stencil) = create_main_targets(dim);
+                self.output_color = output_color;
+                self.output_stencil = output_stencil;
+            }
+            Some(e)
+        } else {
+            None
+        }
+    }
 }
 
 impl<T, W> Window for PistonWindow<T, W>
@@ -284,5 +339,25 @@ impl<T, W> AdvancedWindow for PistonWindow<T, W>
     }
     fn set_capture_cursor(&mut self, value: bool) {
         self.window.set_capture_cursor(value)
+    }
+}
+
+impl<T, W> EventLoop for PistonWindow<T, W>
+    where W: Window
+{
+    fn set_ups(&mut self, frames: u64) {
+        self.events.set_ups(frames);
+    }
+
+    fn set_max_fps(&mut self, frames: u64) {
+        self.events.set_max_fps(frames);
+    }
+
+    fn set_swap_buffers(&mut self, enable: bool) {
+        self.events.set_swap_buffers(enable);
+    }
+
+    fn set_bench_mode(&mut self, enable: bool) {
+        self.events.set_bench_mode(enable);
     }
 }
