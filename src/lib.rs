@@ -40,14 +40,16 @@
 //!
 //! Change the second generic parameter to the window back-end you want to use.
 //!
-//! ```no_run
+//! ```ignore
 //! extern crate piston_window;
+//! extern crate sdl2_window;
 //!
 //! use piston_window::*;
+//! use sdl2_window::Sdl2Window;
 //!
 //! # fn main() {
 //!
-//! let window: PistonWindow =
+//! let window: PistonWindow<(), Sdl2Window> =
 //!     WindowSettings::new("title", [512; 2])
 //!         .build().unwrap();
 //!
@@ -220,9 +222,9 @@ impl<T, W> PistonWindow<T, W>
     }
 
     /// Renders 2D graphics.
-    pub fn draw_2d<F, E>(&mut self, e: &E, f: F) where
-        F: FnOnce(Context, &mut G2d),
-        E: GenericEvent
+    pub fn draw_2d<E, F>(&mut self, e: &E, f: F) where
+        E: GenericEvent,
+        F: FnOnce(Context, &mut G2d)
     {
         use piston::input::RenderEvent;
 
@@ -239,9 +241,9 @@ impl<T, W> PistonWindow<T, W>
     }
 
     /// Renders 3D graphics.
-    pub fn draw_3d<F, E>(&mut self, e: &E, f: F) where
-        F: FnOnce(&mut GfxEncoder),
-        E: GenericEvent
+    pub fn draw_3d<E, F>(&mut self, e: &E, f: F) where
+        E: GenericEvent,
+        F: FnOnce(&mut GfxEncoder)
     {
         use piston::input::RenderEvent;
 
