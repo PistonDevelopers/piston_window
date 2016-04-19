@@ -18,8 +18,8 @@ fn main() {
         .exit_on_esc(true)
         .build()
         .unwrap_or_else(|e| { panic!("Failed to build PistonWindow: {}", e) });
-    for e in window {
-        e.draw_2d(|_c, g| {
+    while let Some(e) = window.next() {
+        e.draw_2d(&e, |_c, g| {
             clear([0.5, 1.0, 0.5, 1.0], g);
         });
     }
@@ -44,18 +44,18 @@ This can be quite buggy, since you need to resolve the state for each event.
 Instead, you could pass around one `PistonWindow` to different functions that represents the states.
 This way you do not have to resolve the state, because it is part of the context.
 
-`PistonWindow` implements `AdvancedWindow`, `Iterator`, `Window` and `GenericEvent`.
-The iterator emits new objects of same type that wraps the event from the game loop.
+`PistonWindow` implements `AdvancedWindow`, `Window` and `EventLoop`.
 You can swap the application state with `.app` method.
 Nested game loops are supported, so you can have one inside another.
 
 ```Rust
-for e in window {
+while let Some(e) = window.next() {
     if let Some(button) = e.press_args() {
         let intro = e.app(start_intro());
-        for e in intro {
+        while let Some(e) = intro.next() {
             ...
         }
+        window = into.app(());
     }
 }
 ```
