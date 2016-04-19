@@ -3,23 +3,23 @@ extern crate piston_window;
 use piston_window::*;
 
 fn main() {
-    let mut window: PistonWindow = WindowSettings::new("Hello Piston!", [640, 480])
+    let title = "Hello Piston! (press any key to enter inner loop)";
+    let mut window: PistonWindow = WindowSettings::new(title, [640, 480])
         .exit_on_esc(true)
         .build()
         .unwrap_or_else(|e| { panic!("Failed to build PistonWindow: {}", e) });
-    let mut events: WindowEvents = window.events();
-    println!("Press any button to enter inner loop");
-    while let Some(e) =  events.next(&mut window) {
-        window.draw_2d(&e, |_c, g| {
+    while let Some(e) = window.next() {
+        window.draw_2d(&e, |c, g| {
             clear([0.5, 1.0, 0.5, 1.0], g);
+            rectangle([1.0, 0.0, 0.0, 1.0], [50.0, 50.0, 100.0, 100.0], c.transform, g);
         });
 
-        if let Some(button) = e.press_args() {
-            println!("Pressed {:?}", button);
-            println!("Press X to exit inner loop");
-            while let Some(e) = events.next(&mut window) {
-                window.draw_2d(&e, |_c, g| {
+        if e.press_args().is_some() {
+            window.set_title("Inner loop (press X to exit inner loop)".into());
+            while let Some(e) = window.next() {
+                window.draw_2d(&e, |c, g| {
                     clear([0.5, 0.5, 1.0, 1.0], g);
+                    ellipse([1.0, 0.0, 0.0, 1.0], [50.0, 50.0, 100.0, 100.0], c.transform, g);
                 });
 
                 // Inner loop.
@@ -27,7 +27,7 @@ fn main() {
                     break;
                 }
             }
-            println!("You have exited the inner loop");
+            window.set_title(title.into());
         }
     }
 }
