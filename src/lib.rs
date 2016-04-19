@@ -55,6 +55,25 @@
 //! # }
 //! ```
 //!
+//! ### Change application state
+//!
+//! `PistonWindow` has an `app` method that changes application state.
+//! When you call `app`, it returns `PistonWindow<App>`.
+//! By default, the application state is `()`.
+//!
+//! The idea is to cleanly separate the states of the application from each other.
+//! Many kind of programs on high level can be described as a finite state machine.
+//! Piston's design is focused at external control, where the programmer decides the flow of the
+//! program.
+//!
+//! For example, an adventure game can use different types of event loops for various rooms.
+//! The event loops can vary whether you want to display animations, have a dialogue or navigate.
+//!
+//! For example, a game engine can use one event loop for gameplay,
+//! another for editor mode, and yet another for the game menu.
+//!
+//! For a demonstration of this pattern, see the "hello_piston" example.
+//!
 //! ### sRGB
 //!
 //! The impl of `BuildFromWindowSettings` in this library turns on
@@ -70,7 +89,8 @@
 //!
 //! ### Library dependencies
 //!
-//! This library is not meant to be depended on by other libraries.
+//! This library is meant to be used in applications only.
+//! It is not meant to be depended on by generic libraries.
 //! Instead, libraries should depend on the lower abstractions,
 //! such as the [Piston core](https://github.com/pistondevelopers/piston).
 
