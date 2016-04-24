@@ -37,7 +37,7 @@
 //!
 //! ### Swap to another window back-end
 //!
-//! Change the second generic parameter to the window back-end you want to use.
+//! Change the generic parameter to the window back-end you want to use.
 //!
 //! ```ignore
 //! extern crate piston_window;
@@ -48,31 +48,12 @@
 //!
 //! # fn main() {
 //!
-//! let window: PistonWindow<(), Sdl2Window> =
+//! let window: PistonWindow<Sdl2Window> =
 //!     WindowSettings::new("title", [512; 2])
 //!         .build().unwrap();
 //!
 //! # }
 //! ```
-//!
-//! ### Change application state
-//!
-//! `PistonWindow` has an `app` method that changes application state.
-//! When you call `app`, it returns `PistonWindow<App>`.
-//! By default, the application state is `()`.
-//!
-//! The idea is to cleanly separate the states of the application from each other.
-//! Many kind of programs on high level can be described as a finite state machine.
-//! Piston's design is focused at external control, where the programmer decides the flow of the
-//! program.
-//!
-//! For example, an adventure game can use different types of event loops for various rooms.
-//! The event loops can vary whether you want to display animations, have a dialogue or navigate.
-//!
-//! For example, a game engine can use one event loop for gameplay,
-//! another for editor mode, and yet another for the game menu.
-//!
-//! For a demonstration of this pattern, see the "hello_piston" example.
 //!
 //! ### sRGB
 //!
@@ -126,7 +107,7 @@ pub type G2d<'a> = GfxGraphics<'a,
 pub type G2dTexture<'a> = Texture<gfx_device_gl::Resources>;
 
 /// Contains everything required for controlling window, graphics, event loop.
-pub struct PistonWindow<T = (), W: Window = GlutinWindow> {
+pub struct PistonWindow<W: Window = GlutinWindow> {
     /// The window.
     pub window: W,
     /// GFX encoder.
@@ -143,18 +124,16 @@ pub struct PistonWindow<T = (), W: Window = GlutinWindow> {
     pub g2d: Gfx2d<gfx_device_gl::Resources>,
     /// Event loop state.
     pub events: WindowEvents,
-    /// Application structure.
-    pub app: T,
     /// The factory that was created along with the device.
     pub factory: gfx_device_gl::Factory,
 }
 
-impl<W> BuildFromWindowSettings for PistonWindow<(), W>
+impl<W> BuildFromWindowSettings for PistonWindow<W>
     where W: Window + OpenGLWindow + BuildFromWindowSettings,
           W::Event: GenericEvent
 {
     fn build_from_window_settings(mut settings: WindowSettings)
-    -> Result<PistonWindow<(), W>, String> {
+    -> Result<PistonWindow<W>, String> {
         // Turn on sRGB.
         settings = settings.srgb(true);
 
@@ -163,8 +142,7 @@ impl<W> BuildFromWindowSettings for PistonWindow<(), W>
         let opengl = settings.get_maybe_opengl().unwrap_or(OpenGL::V3_2);
         let samples = settings.get_samples();
 
-        Ok(PistonWindow::new(opengl, samples,
-            try!(settings.build()), ()))
+        Ok(PistonWindow::new(opengl, samples, try!(settings.build())))
     }
 }
 
@@ -187,16 +165,11 @@ fn create_main_targets(dim: gfx::tex::Dimensions) ->
     (output_color, output_stencil)
 }
 
-impl<T, W> PistonWindow<T, W>
+impl<W> PistonWindow<W>
     where W: Window, W::Event: GenericEvent
 {
     /// Creates a new piston window.
-    pub fn new(
-        opengl: OpenGL,
-        samples: u8,
-        mut window: W,
-        app: T
-    ) -> Self
+    pub fn new(opengl: OpenGL, samples: u8, mut window: W) -> Self
         where W: OpenGLWindow
     {
         use piston::window::{ OpenGLWindow, Window };
@@ -225,23 +198,7 @@ impl<T, W> PistonWindow<T, W>
             output_stencil: output_stencil,
             g2d: g2d,
             events: events,
-            app: app,
             factory: factory,
-        }
-    }
-
-    /// Changes application structure.
-    pub fn app<U>(self, app: U) -> PistonWindow<U, W> {
-        PistonWindow {
-            window: self.window,
-            encoder: self.encoder,
-            device: self.device,
-            output_color: self.output_color,
-            output_stencil: self.output_stencil,
-            g2d: self.g2d,
-            events: self.events,
-            app: app,
-            factory: self.factory,
         }
     }
 
@@ -267,12 +224,12 @@ impl<T, W> PistonWindow<T, W>
     /// Renders 3D graphics.
     pub fn draw_3d<E, F>(&mut self, e: &E, f: F) where
         E: GenericEvent,
-        F: FnOnce(&mut GfxEncoder)
+        F: FnOnce(&mut Self)
     {
         use piston::input::RenderEvent;
 
         if let Some(_) = e.render_args() {
-            f(&mut self.encoder);
+            f(self);
             self.encoder.flush(&mut self.device);
         }
     }
@@ -309,7 +266,7 @@ impl<T, W> PistonWindow<T, W>
     }
 }
 
-impl<T, W> Window for PistonWindow<T, W>
+impl<W> Window for PistonWindow<W>
     where W: Window
 {
     type Event = <W as Window>::Event;
@@ -326,7 +283,7 @@ impl<T, W> Window for PistonWindow<T, W>
     }
 }
 
-impl<T, W> AdvancedWindow for PistonWindow<T, W>
+impl<W> AdvancedWindow for PistonWindow<W>
     where W: AdvancedWindow
 {
     fn get_title(&self) -> String { self.window.get_title() }
@@ -342,7 +299,7 @@ impl<T, W> AdvancedWindow for PistonWindow<T, W>
     }
 }
 
-impl<T, W> EventLoop for PistonWindow<T, W>
+impl<W> EventLoop for PistonWindow<W>
     where W: Window
 {
     fn set_ups(&mut self, frames: u64) {
