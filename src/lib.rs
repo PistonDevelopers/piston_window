@@ -204,14 +204,14 @@ impl<W> PistonWindow<W>
     }
 
     /// Renders 2D graphics.
-    pub fn draw_2d<E, F>(&mut self, e: &E, f: F) where
+    pub fn draw_2d<E, F, U>(&mut self, e: &E, f: F) -> Option<U> where
         E: GenericEvent,
-        F: FnOnce(Context, &mut G2d)
+        F: FnOnce(Context, &mut G2d) -> U
     {
         use piston::input::RenderEvent;
 
         if let Some(args) = e.render_args() {
-            self.g2d.draw(
+            let res = self.g2d.draw(
                 &mut self.encoder,
                 &self.output_color,
                 &self.output_stencil,
@@ -219,19 +219,25 @@ impl<W> PistonWindow<W>
                 f
             );
             self.encoder.flush(&mut self.device);
+            Some(res)
+        } else {
+            None
         }
     }
 
     /// Renders 3D graphics.
-    pub fn draw_3d<E, F>(&mut self, e: &E, f: F) where
+    pub fn draw_3d<E, F, U>(&mut self, e: &E, f: F) -> Option<U> where
         E: GenericEvent,
-        F: FnOnce(&mut Self)
+        F: FnOnce(&mut Self) -> U
     {
         use piston::input::RenderEvent;
 
         if let Some(_) = e.render_args() {
-            f(self);
+            let res = f(self);
             self.encoder.flush(&mut self.device);
+            Some(res)
+        } else {
+            None
         }
     }
 
