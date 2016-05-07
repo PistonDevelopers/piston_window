@@ -77,6 +77,7 @@
 
 extern crate piston;
 extern crate gfx;
+extern crate gfx_core;
 extern crate gfx_device_gl;
 extern crate gfx_graphics;
 extern crate graphics;
@@ -151,7 +152,7 @@ fn create_main_targets(dim: gfx::tex::Dimensions) ->
     gfx_device_gl::Resources, gfx::format::Srgba8>,
  gfx::handle::DepthStencilView<
     gfx_device_gl::Resources, gfx::format::DepthStencil>) {
-    use gfx::core::factory::Typed;
+    use gfx_core::factory::Typed;
     use gfx::format::{DepthStencil, Format, Formatted, Srgba8};
 
     let color_format: Format = <Srgba8 as Formatted>::get_format();
@@ -173,7 +174,7 @@ impl<W> PistonWindow<W>
         where W: OpenGLWindow
     {
         use piston::window::{ OpenGLWindow, Window };
-        use gfx::core::factory::Typed;
+        use gfx_core::factory::Typed;
 
         let (device, mut factory) =
             gfx_device_gl::create(|s|
@@ -238,7 +239,7 @@ impl<W> PistonWindow<W>
     /// Cleans up after rendering and resizes frame buffers.
     pub fn next(&mut self) -> Option<Event<<W as Window>::Event>> {
         use piston::input::*;
-        use gfx::core::factory::Typed;
+        use gfx_core::factory::Typed;
         use gfx::Device;
 
         if let Some(e) = self.events.next(&mut self.window) {
