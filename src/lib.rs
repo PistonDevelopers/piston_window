@@ -173,9 +173,6 @@ impl<W> PistonWindow<W>
     pub fn new(opengl: OpenGL, samples: u8, mut window: W) -> Self
         where W: OpenGLWindow
     {
-        use piston::window::{ OpenGLWindow, Window };
-        use gfx_core::factory::Typed;
-
         let (device, mut factory) =
             gfx_device_gl::create(|s|
                 window.get_proc_address(s) as *const _);
@@ -205,11 +202,13 @@ impl<W> PistonWindow<W>
 
     /// Renders 2D graphics.
     pub fn draw_2d<E, F, U>(&mut self, e: &E, f: F) -> Option<U> where
+        W: OpenGLWindow,
         E: GenericEvent,
         F: FnOnce(Context, &mut G2d) -> U
     {
         use piston::input::RenderEvent;
 
+        self.window.make_current();
         if let Some(args) = e.render_args() {
             let res = self.g2d.draw(
                 &mut self.encoder,
