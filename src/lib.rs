@@ -226,11 +226,13 @@ impl<W> PistonWindow<W>
 
     /// Renders 3D graphics.
     pub fn draw_3d<E, F, U>(&mut self, e: &E, f: F) -> Option<U> where
+        W: OpenGLWindow,
         E: GenericEvent,
         F: FnOnce(&mut Self) -> U
     {
         use piston::input::RenderEvent;
 
+        self.window.make_current();
         if let Some(_) = e.render_args() {
             let res = f(self);
             self.encoder.flush(&mut self.device);
