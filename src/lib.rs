@@ -133,10 +133,9 @@ impl<W> BuildFromWindowSettings for PistonWindow<W>
     where W: Window + OpenGLWindow + BuildFromWindowSettings,
           W::Event: GenericEvent
 {
-    fn build_from_window_settings(mut settings: WindowSettings)
-    -> Result<PistonWindow<W>, String> {
+    fn build_from_window_settings(settings: &WindowSettings) -> Result<PistonWindow<W>, String> {
         // Turn on sRGB.
-        settings = settings.srgb(true);
+        let settings = settings.clone().srgb(true);
 
         // Use OpenGL 3.2 by default, because this is what window backends
         // usually do.
@@ -304,6 +303,14 @@ impl<W> AdvancedWindow for PistonWindow<W>
     }
     fn set_capture_cursor(&mut self, value: bool) {
         self.window.set_capture_cursor(value)
+    }
+    fn show(&mut self) { self.window.show() }
+    fn hide(&mut self) { self.window.hide() }
+    fn get_position(&self) -> Option<Position> {
+        self.window.get_position()
+    }
+    fn set_position<P: Into<Position>>(&mut self, pos: P) {
+        self.window.set_position(pos)
     }
 }
 
