@@ -83,7 +83,6 @@ extern crate gfx_graphics;
 extern crate graphics;
 extern crate shader_version;
 extern crate glutin_window;
-pub extern crate texture;
 
 use glutin_window::GlutinWindow;
 pub use shader_version::OpenGL;
