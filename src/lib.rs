@@ -206,8 +206,6 @@ impl<W> PistonWindow<W>
         E: GenericEvent,
         F: FnOnce(Context, &mut G2d) -> U
     {
-        use piston::input::RenderEvent;
-
         self.window.make_current();
         if let Some(args) = e.render_args() {
             let res = self.g2d.draw(
@@ -230,8 +228,6 @@ impl<W> PistonWindow<W>
         E: GenericEvent,
         F: FnOnce(&mut Self) -> U
     {
-        use piston::input::RenderEvent;
-
         self.window.make_current();
         if let Some(_) = e.render_args() {
             let res = f(self);
