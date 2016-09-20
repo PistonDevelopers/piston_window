@@ -19,12 +19,14 @@
 //! extern crate piston_window;
 //!
 //! use piston_window::*;
+//! use piston_window::event_loop::*;
 //!
 //! fn main() {
 //!     let mut window: PistonWindow =
 //!         WindowSettings::new("Hello World!", [512; 2])
 //!             .build().unwrap();
-//!     while let Some(e) = window.next() {
+//!     let mut events = window.events();
+//!     while let Some(e) = window.next(&mut events) {
 //!         window.draw_2d(&e, |c, g| {
 //!             clear([0.5, 0.5, 0.5, 1.0], g);
 //!             rectangle([1.0, 0.0, 0.0, 1.0], // red
@@ -90,7 +92,6 @@ pub use shader_version::OpenGL;
 pub use graphics::*;
 pub use piston::window::*;
 pub use piston::input::*;
-pub use piston::event_loop::*;
 pub use gfx_graphics::{ GlyphError, Texture, TextureSettings, Flip };
 
 use gfx_graphics::{ Gfx2d, GfxGraphics };
@@ -124,8 +125,6 @@ pub struct PistonWindow<W: Window = GlutinWindow> {
         gfx_device_gl::Resources, gfx::format::DepthStencil>,
     /// Gfx2d.
     pub g2d: Gfx2d<gfx_device_gl::Resources>,
-    /// Event loop state.
-    pub events: WindowEvents,
     /// The factory that was created along with the device.
     pub factory: gfx_device_gl::Factory,
 }
@@ -187,7 +186,6 @@ impl<W> PistonWindow<W>
 
         let g2d = Gfx2d::new(opengl, &mut factory);
         let encoder = factory.create_command_buffer().into();
-        let events = window.events();
         PistonWindow {
             window: window,
             encoder: encoder,
@@ -195,7 +193,6 @@ impl<W> PistonWindow<W>
             output_color: output_color,
             output_stencil: output_stencil,
             g2d: g2d,
-            events: events,
             factory: factory,
         }
     }
@@ -238,34 +235,28 @@ impl<W> PistonWindow<W>
         }
     }
 
-    /// Returns next event.
+    /// Let window handle new event.
     /// Cleans up after rendering and resizes frame buffers.
-    pub fn next(&mut self) -> Option<Event<<W as Window>::Event>> {
+    pub fn handle_event(&mut self, event: &Event<<W as Window>::Event>) {
         use piston::input::*;
         use gfx_core::factory::Typed;
         use gfx::Device;
+        if let Some(_) = event.after_render_args() {
+            // After swapping buffers.
+            self.device.cleanup();
+        }
 
-        if let Some(e) = self.events.next(&mut self.window) {
-            if let Some(_) = e.after_render_args() {
-                // After swapping buffers.
-                self.device.cleanup();
-            }
-
-            // Check whether window has resized and update the output.
-            let dim = self.output_color.raw().get_dimensions();
-            let (w, h) = (dim.0, dim.1);
-            let draw_size = self.window.draw_size();
-            if w != draw_size.width as u16 || h != draw_size.height as u16 {
-                let dim = (draw_size.width as u16,
-                           draw_size.height as u16,
-                           dim.2, dim.3);
-                let (output_color, output_stencil) = create_main_targets(dim);
-                self.output_color = output_color;
-                self.output_stencil = output_stencil;
-            }
-            Some(e)
-        } else {
-            None
+        // Check whether window has resized and update the output.
+        let dim = self.output_color.raw().get_dimensions();
+        let (w, h) = (dim.0, dim.1);
+        let draw_size = self.window.draw_size();
+        if w != draw_size.width as u16 || h != draw_size.height as u16 {
+            let dim = (draw_size.width as u16,
+                       draw_size.height as u16,
+                        dim.2, dim.3);
+            let (output_color, output_stencil) = create_main_targets(dim);
+            self.output_color = output_color;
+            self.output_stencil = output_stencil;
         }
     }
 }
@@ -311,22 +302,25 @@ impl<W> AdvancedWindow for PistonWindow<W>
     }
 }
 
-impl<W> EventLoop for PistonWindow<W>
-    where W: Window
-{
-    fn set_ups(&mut self, frames: u64) {
-        self.events.set_ups(frames);
+/// Module to be used when using the default piston event loop with piston_window.
+pub mod event_loop {
+    pub use piston::event_loop::*;
+    use PistonWindow;
+    use piston::input::Event;
+    /// Used for a window to loop through events.
+    pub trait EventWindow {
+        /// Returns next event.
+        fn next(&mut self, events: &mut WindowEvents) -> Option<Event>;
     }
-
-    fn set_max_fps(&mut self, frames: u64) {
-        self.events.set_max_fps(frames);
-    }
-
-    fn set_swap_buffers(&mut self, enable: bool) {
-        self.events.set_swap_buffers(enable);
-    }
-
-    fn set_bench_mode(&mut self, enable: bool) {
-        self.events.set_bench_mode(enable);
+    impl EventWindow for PistonWindow
+    {
+        fn next(&mut self, events: &mut WindowEvents) -> Option<Event> {
+            if let Some(e) = events.next(&mut self.window) {
+                self.handle_event(&e);
+                Some(e)
+            } else {
+                None
+            }
+        }
     }
 }
