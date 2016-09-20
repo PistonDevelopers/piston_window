@@ -1,6 +1,7 @@
 extern crate piston_window;
 
 use piston_window::*;
+use piston_window::event_loop::*;
 
 fn main() {
     let title = "Hello Piston! (press any key to enter inner loop)";
@@ -8,8 +9,9 @@ fn main() {
         .exit_on_esc(true)
         .build()
         .unwrap_or_else(|e| { panic!("Failed to build PistonWindow: {}", e) });
-        
-    while let Some(e) = window.next() {
+
+    let mut events = window.events();
+    while let Some(e) = window.next(&mut events) {
         window.draw_2d(&e, |c, g| {
             clear([0.5, 1.0, 0.5, 1.0], g);
             rectangle([1.0, 0.0, 0.0, 1.0], [50.0, 50.0, 100.0, 100.0], c.transform, g);
@@ -19,7 +21,7 @@ fn main() {
             InnerApp {
                 title: "Inner loop (press X to exit inner loop)",
                 exit_button: Button::Keyboard(Key::X),
-            }.run(&mut window);
+            }.run(&mut window, &mut events);
             window.set_title(title.into());
         }
     }
@@ -32,9 +34,9 @@ pub struct InnerApp {
 }
 
 impl InnerApp {
-    pub fn run(&mut self, window: &mut PistonWindow) {
+    pub fn run(&mut self, window: &mut PistonWindow, mut events: &mut WindowEvents) {
         window.set_title(self.title.into());
-        while let Some(e) = window.next() {
+        while let Some(e) = window.next(&mut events) {
             window.draw_2d(&e, |c, g| {
                 clear([0.5, 0.5, 1.0, 1.0], g);
                 ellipse([1.0, 0.0, 0.0, 1.0], [50.0, 50.0, 100.0, 100.0], c.transform, g);
