@@ -304,7 +304,7 @@ impl<W> AdvancedWindow for PistonWindow<W>
 
 /// Module to be used when using the default piston event loop with piston_window.
 pub mod event_loop {
-    pub use piston::event_loop::{ Events, WindowEvents };
+    pub use piston::event_loop::*;
     use PistonWindow;
     use piston::input::Event;
     /// Used for a window to loop through events.
