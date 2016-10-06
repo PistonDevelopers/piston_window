@@ -241,31 +241,37 @@ impl<W> PistonWindow<W>
     /// Returns next event.
     /// Cleans up after rendering and resizes frame buffers.
     pub fn next(&mut self) -> Option<Event<<W as Window>::Event>> {
+        if let Some(e) = self.events.next(&mut self.window) {
+            self.event(&e);
+            Some(e)
+        } else {
+            None
+        }
+    }
+
+    /// Let window handle new event.
+    /// Cleans up after rendering and resizes frame buffers.
+    pub fn event(&mut self, event: &Event<<W as Window>::Event>) {
         use piston::input::*;
         use gfx_core::factory::Typed;
         use gfx::Device;
 
-        if let Some(e) = self.events.next(&mut self.window) {
-            if let Some(_) = e.after_render_args() {
-                // After swapping buffers.
-                self.device.cleanup();
-            }
+        if let Some(_) = event.after_render_args() {
+            // After swapping buffers.
+            self.device.cleanup();
+        }
 
-            // Check whether window has resized and update the output.
-            let dim = self.output_color.raw().get_dimensions();
-            let (w, h) = (dim.0, dim.1);
-            let draw_size = self.window.draw_size();
-            if w != draw_size.width as u16 || h != draw_size.height as u16 {
-                let dim = (draw_size.width as u16,
-                           draw_size.height as u16,
-                           dim.2, dim.3);
-                let (output_color, output_stencil) = create_main_targets(dim);
-                self.output_color = output_color;
-                self.output_stencil = output_stencil;
-            }
-            Some(e)
-        } else {
-            None
+        // Check whether window has resized and update the output.
+        let dim = self.output_color.raw().get_dimensions();
+        let (w, h) = (dim.0, dim.1);
+        let draw_size = self.window.draw_size();
+        if w != draw_size.width as u16 || h != draw_size.height as u16 {
+            let dim = (draw_size.width as u16,
+                       draw_size.height as u16,
+                       dim.2, dim.3);
+            let (output_color, output_stencil) = create_main_targets(dim);
+            self.output_color = output_color;
+            self.output_stencil = output_stencil;
         }
     }
 }
