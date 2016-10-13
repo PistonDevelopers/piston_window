@@ -94,6 +94,7 @@ pub use piston::event_loop::*;
 pub use gfx_graphics::{ GlyphError, Texture, TextureSettings, Flip };
 
 use gfx_graphics::{ Gfx2d, GfxGraphics };
+use std::time::Duration;
 
 /// Actual gfx::Stream implementation carried by the window.
 pub type GfxEncoder = gfx::Encoder<gfx_device_gl::Resources,
@@ -288,6 +289,12 @@ impl<W> Window for PistonWindow<W>
     fn size(&self) -> Size { self.window.size() }
     fn draw_size(&self) -> Size { self.window.draw_size() }
     fn swap_buffers(&mut self) { self.window.swap_buffers() }
+    fn wait_event(&mut self) -> Self::Event {
+        Window::wait_event(&mut self.window)
+    }
+    fn wait_event_timeout(&mut self, timeout: Duration) -> Option<Self::Event> {
+        Window::wait_event_timeout(&mut self.window, timeout)
+    }
     fn poll_event(&mut self) -> Option<Self::Event> {
         Window::poll_event(&mut self.window)
     }
