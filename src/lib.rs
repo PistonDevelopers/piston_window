@@ -107,7 +107,7 @@ pub type G2d<'a> = GfxGraphics<'a,
     gfx_device_gl::Resources,
     gfx_device_gl::CommandBuffer>;
 /// Texture type compatible with `G2d`.
-pub type G2dTexture<'a> = Texture<gfx_device_gl::Resources>;
+pub type G2dTexture = Texture<gfx_device_gl::Resources>;
 
 /// Contains everything required for controlling window, graphics, event loop.
 pub struct PistonWindow<W: Window = GlutinWindow> {
