@@ -77,7 +77,6 @@
 
 extern crate piston;
 extern crate gfx;
-extern crate gfx_core;
 extern crate gfx_device_gl;
 extern crate gfx_graphics;
 extern crate graphics;
@@ -148,13 +147,13 @@ impl<W> BuildFromWindowSettings for PistonWindow<W>
     }
 }
 
-fn create_main_targets(dim: gfx::tex::Dimensions) ->
+fn create_main_targets(dim: gfx::texture::Dimensions) ->
 (gfx::handle::RenderTargetView<
     gfx_device_gl::Resources, gfx::format::Srgba8>,
  gfx::handle::DepthStencilView<
     gfx_device_gl::Resources, gfx::format::DepthStencil>) {
-    use gfx_core::factory::Typed;
     use gfx::format::{DepthStencil, Format, Formatted, Srgba8};
+    use gfx::memory::Typed;
 
     let color_format: Format = <Srgba8 as Formatted>::get_format();
     let depth_format: Format = <DepthStencil as Formatted>::get_format();
@@ -179,7 +178,7 @@ impl<W> PistonWindow<W>
                 window.get_proc_address(s) as *const _);
 
         let (output_color, output_stencil) = {
-            let aa = samples as gfx::tex::NumSamples;
+            let aa = samples as gfx::texture::NumSamples;
             let draw_size = window.draw_size();
             let dim = (draw_size.width as u16, draw_size.height as u16,
                        1, aa.into());
@@ -254,8 +253,8 @@ impl<W> PistonWindow<W>
     /// Cleans up after rendering and resizes frame buffers.
     pub fn event(&mut self, event: &Event<<W as Window>::Event>) {
         use piston::input::*;
-        use gfx_core::factory::Typed;
         use gfx::Device;
+        use gfx::memory::Typed;
 
         if let Some(_) = event.after_render_args() {
             // After swapping buffers.
