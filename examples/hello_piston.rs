@@ -8,7 +8,8 @@ fn main() {
         .exit_on_esc(true)
         .build()
         .unwrap_or_else(|e| { panic!("Failed to build PistonWindow: {}", e) });
-        
+
+    window.set_lazy(true);
     while let Some(e) = window.next() {
         window.draw_2d(&e, |c, g| {
             clear([0.5, 1.0, 0.5, 1.0], g);

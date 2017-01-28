@@ -125,14 +125,13 @@ pub struct PistonWindow<W: Window = GlutinWindow> {
     /// Gfx2d.
     pub g2d: Gfx2d<gfx_device_gl::Resources>,
     /// Event loop state.
-    pub events: WindowEvents,
+    pub events: Events,
     /// The factory that was created along with the device.
     pub factory: gfx_device_gl::Factory,
 }
 
 impl<W> BuildFromWindowSettings for PistonWindow<W>
-    where W: Window + OpenGLWindow + BuildFromWindowSettings,
-          W::Event: GenericEvent
+    where W: Window + OpenGLWindow + BuildFromWindowSettings
 {
     fn build_from_window_settings(settings: &WindowSettings) -> Result<PistonWindow<W>, String> {
         // Turn on sRGB.
@@ -167,7 +166,7 @@ fn create_main_targets(dim: gfx::texture::Dimensions) ->
 }
 
 impl<W> PistonWindow<W>
-    where W: Window, W::Event: GenericEvent
+    where W: Window
 {
     /// Creates a new piston window.
     pub fn new(opengl: OpenGL, samples: u8, mut window: W) -> Self
@@ -187,7 +186,7 @@ impl<W> PistonWindow<W>
 
         let g2d = Gfx2d::new(opengl, &mut factory);
         let encoder = factory.create_command_buffer().into();
-        let events = window.events();
+        let events = Events::new(EventSettings::new());
         PistonWindow {
             window: window,
             encoder: encoder,
@@ -240,7 +239,7 @@ impl<W> PistonWindow<W>
 
     /// Returns next event.
     /// Cleans up after rendering and resizes frame buffers.
-    pub fn next(&mut self) -> Option<Event<<W as Window>::Event>> {
+    pub fn next(&mut self) -> Option<Input> {
         if let Some(e) = self.events.next(&mut self.window) {
             self.event(&e);
             Some(e)
@@ -251,7 +250,7 @@ impl<W> PistonWindow<W>
 
     /// Let window handle new event.
     /// Cleans up after rendering and resizes frame buffers.
-    pub fn event(&mut self, event: &Event<<W as Window>::Event>) {
+    pub fn event(&mut self, event: &Input) {
         use piston::input::*;
         use gfx::Device;
         use gfx::memory::Typed;
@@ -279,8 +278,6 @@ impl<W> PistonWindow<W>
 impl<W> Window for PistonWindow<W>
     where W: Window
 {
-    type Event = <W as Window>::Event;
-
     fn should_close(&self) -> bool { self.window.should_close() }
     fn set_should_close(&mut self, value: bool) {
         self.window.set_should_close(value)
@@ -288,13 +285,13 @@ impl<W> Window for PistonWindow<W>
     fn size(&self) -> Size { self.window.size() }
     fn draw_size(&self) -> Size { self.window.draw_size() }
     fn swap_buffers(&mut self) { self.window.swap_buffers() }
-    fn wait_event(&mut self) -> Self::Event {
+    fn wait_event(&mut self) -> Input {
         Window::wait_event(&mut self.window)
     }
-    fn wait_event_timeout(&mut self, timeout: Duration) -> Option<Self::Event> {
+    fn wait_event_timeout(&mut self, timeout: Duration) -> Option<Input> {
         Window::wait_event_timeout(&mut self.window, timeout)
     }
-    fn poll_event(&mut self) -> Option<Self::Event> {
+    fn poll_event(&mut self) -> Option<Input> {
         Window::poll_event(&mut self.window)
     }
 }
@@ -326,19 +323,11 @@ impl<W> AdvancedWindow for PistonWindow<W>
 impl<W> EventLoop for PistonWindow<W>
     where W: Window
 {
-    fn set_ups(&mut self, frames: u64) {
-        self.events.set_ups(frames);
+    fn get_event_settings(&self) -> EventSettings {
+        self.events.get_event_settings()
     }
 
-    fn set_max_fps(&mut self, frames: u64) {
-        self.events.set_max_fps(frames);
-    }
-
-    fn set_swap_buffers(&mut self, enable: bool) {
-        self.events.set_swap_buffers(enable);
-    }
-
-    fn set_bench_mode(&mut self, enable: bool) {
-        self.events.set_bench_mode(enable);
+    fn set_event_settings(&mut self, settings: EventSettings) {
+        self.events.set_event_settings(settings);
     }
 }
