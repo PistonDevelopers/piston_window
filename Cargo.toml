@@ -1,7 +1,7 @@
 [package]
 
 name = "piston_window"
-version = "0.64.0"
+version = "0.65.0"
 authors = ["bvssvni <bvssvni@gmail.com>"]
 keywords = ["window", "piston"]
 description = "The official Piston window wrapper for the Piston game engine"
@@ -18,11 +18,11 @@ name = "piston_window"
 
 
 [dependencies]
-gfx = "0.14.0"
-gfx_device_gl = "0.13.0"
-piston = "0.31.0"
-piston2d-gfx_graphics = "0.38.0"
+gfx = "0.15.1"
+gfx_device_gl = "0.14.0"
+piston = "0.32.0"
+piston2d-gfx_graphics = "0.39.0"
 piston2d-graphics = "0.21.0"
 piston-texture = "0.5.0"
 shader_version = "0.2.0"
-pistoncore-glutin_window = "0.35.0"
+pistoncore-glutin_window = "0.36.0"
