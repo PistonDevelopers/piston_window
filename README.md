@@ -1,7 +1,7 @@
 # piston_window [![Build Status](https://travis-ci.org/PistonDevelopers/piston_window.svg?branch=master)](https://travis-ci.org/PistonDevelopers/piston_window) [![Crates.io](https://img.shields.io/crates/v/piston_window.svg)](https://crates.io/crates/piston_window) [![Crates.io](https://img.shields.io/crates/l/piston_window.svg)](https://github.com/PistonDevelopers/piston_window/blob/master/LICENSE)
 The official Piston convenience window wrapper for the Piston game engine
 
-*Notice! If this is your first time visiting Piston, [start here](https://github.com/PistonDevelopers/piston).*
+**Notice! If this is your first time visiting Piston, [start here](https://github.com/PistonDevelopers/piston).**
 
 Piston-Window is designed for only one purpose: Convenience.
 
