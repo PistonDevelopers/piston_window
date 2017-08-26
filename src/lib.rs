@@ -250,7 +250,7 @@ impl<W> PistonWindow<W>
 
     /// Returns next event.
     /// Cleans up after rendering and resizes frame buffers.
-    pub fn next(&mut self) -> Option<Input> {
+    pub fn next(&mut self) -> Option<Event> {
         if let Some(e) = self.events.next(&mut self.window) {
             self.event(&e);
             Some(e)
@@ -261,8 +261,7 @@ impl<W> PistonWindow<W>
 
     /// Let window handle new event.
     /// Cleans up after rendering and resizes frame buffers.
-    pub fn event(&mut self, event: &Input) {
-        use piston::input::*;
+    pub fn event<E: GenericEvent>(&mut self, event: &E) {
         use gfx::Device;
         use gfx::memory::Typed;
 
