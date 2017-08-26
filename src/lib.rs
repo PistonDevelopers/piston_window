@@ -95,7 +95,7 @@ pub use graphics::*;
 pub use piston::window::*;
 pub use piston::input::*;
 pub use piston::event_loop::*;
-pub use gfx_graphics::{ GlyphError, Texture, TextureSettings, Flip };
+pub use gfx_graphics::{ GlyphError, Texture, TextureSettings, Filter, Flip };
 
 use gfx_graphics::{ Gfx2d, GfxGraphics };
 use std::time::Duration;
