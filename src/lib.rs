@@ -104,8 +104,8 @@ use std::time::Duration;
 pub type GfxEncoder = gfx::Encoder<gfx_device_gl::Resources,
     gfx_device_gl::CommandBuffer>;
 /// Glyph cache.
-pub type Glyphs = gfx_graphics::GlyphCache<'static, gfx_device_gl::Resources,
-    gfx_device_gl::Factory>;
+pub type Glyphs = gfx_graphics::GlyphCache<'static, gfx_device_gl::Factory,
+    gfx_device_gl::Resources>;
 /// 2D graphics.
 pub type G2d<'a> = GfxGraphics<'a,
     gfx_device_gl::Resources,
