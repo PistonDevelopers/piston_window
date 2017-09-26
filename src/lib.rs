@@ -95,7 +95,7 @@ pub use graphics::*;
 pub use piston::window::*;
 pub use piston::input::*;
 pub use piston::event_loop::*;
-pub use gfx_graphics::{ GlyphError, Texture, TextureSettings, Filter, Flip };
+pub use gfx_graphics::{ Texture, TextureSettings, Filter, Flip };
 
 use gfx_graphics::{ Gfx2d, GfxGraphics };
 use std::time::Duration;
@@ -104,7 +104,7 @@ use std::time::Duration;
 pub type GfxEncoder = gfx::Encoder<gfx_device_gl::Resources,
     gfx_device_gl::CommandBuffer>;
 /// Glyph cache.
-pub type Glyphs = gfx_graphics::GlyphCache<gfx_device_gl::Resources,
+pub type Glyphs = gfx_graphics::GlyphCache<'static, gfx_device_gl::Resources,
     gfx_device_gl::Factory>;
 /// 2D graphics.
 pub type G2d<'a> = GfxGraphics<'a,
