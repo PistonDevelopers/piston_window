@@ -100,6 +100,8 @@ pub use gfx_graphics::{ Texture, TextureSettings, Filter, Flip };
 use gfx_graphics::{ Gfx2d, GfxGraphics };
 use std::time::Duration;
 
+/// Actual factory used by Gfx backend.
+pub type GfxFactory = gfx_device_gl::Factory;
 /// Actual gfx::Stream implementation carried by the window.
 pub type GfxEncoder = gfx::Encoder<gfx_device_gl::Resources,
     gfx_device_gl::CommandBuffer>;
