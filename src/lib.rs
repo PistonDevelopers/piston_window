@@ -330,6 +330,9 @@ impl<W> AdvancedWindow for PistonWindow<W>
     fn set_position<P: Into<Position>>(&mut self, pos: P) {
         self.window.set_position(pos)
     }
+    fn set_size<S: Into<Size>>(&mut self, size: S) {
+        self.window.set_size(size)
+    }
 }
 
 impl<W> EventLoop for PistonWindow<W>
