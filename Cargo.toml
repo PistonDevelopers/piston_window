@@ -25,4 +25,10 @@ piston2d-gfx_graphics = "0.51.0"
 piston2d-graphics = "0.26.0"
 piston-texture = "0.6.0"
 shader_version = "0.3.0"
-pistoncore-glutin_window = "0.47.0"
+
+
+pistoncore-glutin_window = {version = "0.47.0", optional = true}
+
+[features]
+default = ["glutin"]
+glutin = ["pistoncore-glutin_window"]
