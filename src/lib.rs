@@ -86,10 +86,8 @@ extern crate gfx_device_gl;
 extern crate gfx_graphics;
 extern crate graphics;
 extern crate shader_version;
-extern crate glutin_window;
 pub extern crate texture;
 
-use glutin_window::GlutinWindow;
 pub use shader_version::OpenGL;
 pub use graphics::*;
 pub use piston::window::*;
@@ -116,6 +114,34 @@ pub type G2d<'a> = GfxGraphics<'a,
 pub type G2dTexture = Texture<gfx_device_gl::Resources>;
 
 /// Contains everything required for controlling window, graphics, event loop.
+#[cfg(not(feature="glutin"))]
+pub struct PistonWindow<W: Window> {
+    /// The window.
+    pub window: W,
+    /// GFX encoder.
+    pub encoder: GfxEncoder,
+    /// GFX device.
+    pub device: gfx_device_gl::Device,
+    /// Output frame buffer.
+    pub output_color: gfx::handle::RenderTargetView<
+        gfx_device_gl::Resources, gfx::format::Srgba8>,
+    /// Output stencil buffer.
+    pub output_stencil: gfx::handle::DepthStencilView<
+        gfx_device_gl::Resources, gfx::format::DepthStencil>,
+    /// Gfx2d.
+    pub g2d: Gfx2d<gfx_device_gl::Resources>,
+    /// Event loop state.
+    pub events: Events,
+    /// The factory that was created along with the device.
+    pub factory: gfx_device_gl::Factory,
+}
+
+#[cfg(feature="glutin")]
+extern crate glutin_window;
+#[cfg(feature="glutin")]
+use glutin_window::GlutinWindow;
+/// Contains everything required for controlling window, graphics, event loop.
+#[cfg(feature="glutin")]
 pub struct PistonWindow<W: Window = GlutinWindow> {
     /// The window.
     pub window: W,
