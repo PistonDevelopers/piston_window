@@ -97,6 +97,7 @@ pub use gfx_graphics::{ Texture, TextureSettings, Filter, Flip };
 
 use gfx_graphics::{ Gfx2d, GfxGraphics };
 use std::time::Duration;
+use std::error::Error;
 
 /// Actual factory used by Gfx backend.
 pub type GfxFactory = gfx_device_gl::Factory;
@@ -166,7 +167,7 @@ pub struct PistonWindow<W: Window = GlutinWindow> {
 impl<W> BuildFromWindowSettings for PistonWindow<W>
     where W: Window + OpenGLWindow + BuildFromWindowSettings
 {
-    fn build_from_window_settings(settings: &WindowSettings) -> Result<PistonWindow<W>, String> {
+    fn build_from_window_settings(settings: &WindowSettings) -> Result<PistonWindow<W>, Box<Error>> {
         // Turn on sRGB.
         let settings = settings.clone().srgb(true);
 
@@ -175,7 +176,7 @@ impl<W> BuildFromWindowSettings for PistonWindow<W>
         let opengl = settings.get_maybe_opengl().unwrap_or(OpenGL::V3_2);
         let samples = settings.get_samples();
 
-        Ok(PistonWindow::new(opengl, samples, try!(settings.build())))
+        Ok(PistonWindow::new(opengl, samples, settings.build()?))
     }
 }
 
