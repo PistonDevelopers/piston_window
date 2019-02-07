@@ -342,6 +342,10 @@ impl<W> AdvancedWindow for PistonWindow<W>
     fn set_title(&mut self, title: String) {
         self.window.set_title(title)
     }
+    fn get_automatic_close(&self) -> bool { self.window.get_automatic_close() }
+    fn set_automatic_close(&mut self, value: bool) {
+        self.window.set_automatic_close(value);
+    }
     fn get_exit_on_esc(&self) -> bool { self.window.get_exit_on_esc() }
     fn set_exit_on_esc(&mut self, value: bool) {
         self.window.set_exit_on_esc(value)
