@@ -11,7 +11,7 @@ fn main() {
 
     window.set_lazy(true);
     while let Some(e) = window.next() {
-        window.draw_2d(&e, |c, g| {
+        window.draw_2d(&e, |c, g, _| {
             clear([0.5, 1.0, 0.5, 1.0], g);
             rectangle([1.0, 0.0, 0.0, 1.0], [50.0, 50.0, 100.0, 100.0], c.transform, g);
         });
@@ -36,7 +36,7 @@ impl InnerApp {
     pub fn run(&mut self, window: &mut PistonWindow) {
         window.set_title(self.title.into());
         while let Some(e) = window.next() {
-            window.draw_2d(&e, |c, g| {
+            window.draw_2d(&e, |c, g, _| {
                 clear([0.5, 0.5, 1.0, 1.0], g);
                 ellipse([1.0, 0.0, 0.0, 1.0], [50.0, 50.0, 100.0, 100.0], c.transform, g);
             });

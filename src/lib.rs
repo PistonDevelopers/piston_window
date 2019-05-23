@@ -27,7 +27,7 @@
 //!         WindowSettings::new("Hello World!", [512; 2])
 //!             .build().unwrap();
 //!     while let Some(e) = window.next() {
-//!         window.draw_2d(&e, |c, g| {
+//!         window.draw_2d(&e, |c, g, _| {
 //!             clear([0.5, 0.5, 0.5, 1.0], g);
 //!             rectangle([1.0, 0.0, 0.0, 1.0], // red
 //!                       [0.0, 0.0, 100.0, 100.0], // rectangle
@@ -115,6 +115,11 @@ pub type G2d<'a> = GfxGraphics<'a,
     gfx_device_gl::CommandBuffer>;
 /// Texture type compatible with `G2d`.
 pub type G2dTexture = Texture<gfx_device_gl::Resources>;
+/// Texture context.
+pub type G2dTextureContext = TextureContext<
+    gfx_device_gl::Factory,
+    gfx_device_gl::Resources,
+    gfx_device_gl::CommandBuffer>;
 
 /// Contains everything required for controlling window, graphics, event loop.
 #[cfg(not(feature="glutin"))]
@@ -235,6 +240,22 @@ impl<W> PistonWindow<W>
         }
     }
 
+    /// Creates context used to create and update textures.
+    pub fn create_texture_context(&mut self) -> G2dTextureContext {
+        TextureContext {
+            factory: self.factory.clone(),
+            encoder: self.factory.create_command_buffer().into()
+        }
+    }
+
+    /// Loads font from a path.
+    pub fn load_font<P: AsRef<std::path::Path>>(&mut self, path: P) -> Result<Glyphs, std::io::Error> {
+        Glyphs::new(path, TextureContext {
+            factory: self.factory.clone(),
+            encoder: self.factory.create_command_buffer().into()
+        }, TextureSettings::new())
+    }
+
     /// Renders 2D graphics.
     ///
     /// Calls the closure on render events.
@@ -242,18 +263,19 @@ impl<W> PistonWindow<W>
     pub fn draw_2d<E, F, U>(&mut self, e: &E, f: F) -> Option<U> where
         W: OpenGLWindow,
         E: GenericEvent,
-        F: FnOnce(Context, &mut G2d) -> U
+        F: FnOnce(Context, &mut G2d, &mut gfx_device_gl::Device) -> U
     {
         if let Some(args) = e.render_args() {
             self.window.make_current();
+            let device = &mut self.device;
             let res = self.g2d.draw(
                 &mut self.encoder,
                 &self.output_color,
                 &self.output_stencil,
                 args.viewport(),
-                f
+                |c, g| f(c, g, device)
             );
-            self.encoder.flush(&mut self.device);
+            self.encoder.flush(device);
             Some(res)
         } else {
             None
