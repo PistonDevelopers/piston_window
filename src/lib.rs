@@ -180,8 +180,11 @@ impl<W> BuildFromWindowSettings for PistonWindow<W>
 
         // Use OpenGL 3.2 by default, because this is what window backends
         // usually do.
-        let opengl = settings.get_maybe_opengl().unwrap_or(OpenGL::V3_2);
+        let api = settings.get_maybe_graphics_api().unwrap_or(Api::opengl(3, 2));
         let samples = settings.get_samples();
+
+        let opengl = OpenGL::from_api(api)
+            .expect("Could not detect OpenGL version from graphics API");
 
         Ok(PistonWindow::new(opengl, samples, settings.build()?))
     }
