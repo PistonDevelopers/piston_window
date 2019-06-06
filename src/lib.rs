@@ -351,13 +351,13 @@ impl<W> Window for PistonWindow<W>
     fn size(&self) -> Size { self.window.size() }
     fn draw_size(&self) -> Size { self.window.draw_size() }
     fn swap_buffers(&mut self) { self.window.swap_buffers() }
-    fn wait_event(&mut self) -> Input {
+    fn wait_event(&mut self) -> (Input, Option<TimeStamp>) {
         Window::wait_event(&mut self.window)
     }
-    fn wait_event_timeout(&mut self, timeout: Duration) -> Option<Input> {
+    fn wait_event_timeout(&mut self, timeout: Duration) -> Option<(Input, Option<TimeStamp>)> {
         Window::wait_event_timeout(&mut self.window, timeout)
     }
-    fn poll_event(&mut self) -> Option<Input> {
+    fn poll_event(&mut self) -> Option<(Input, Option<TimeStamp>)> {
         Window::poll_event(&mut self.window)
     }
 }
