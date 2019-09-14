@@ -174,7 +174,7 @@ pub struct PistonWindow<W: Window = GlutinWindow> {
 impl<W> BuildFromWindowSettings for PistonWindow<W>
     where W: Window + OpenGLWindow + BuildFromWindowSettings
 {
-    fn build_from_window_settings(settings: &WindowSettings) -> Result<PistonWindow<W>, Box<Error>> {
+    fn build_from_window_settings(settings: &WindowSettings) -> Result<PistonWindow<W>, Box<dyn Error>> {
         // Turn on sRGB.
         let settings = settings.clone().srgb(true);
 
