@@ -20,7 +20,7 @@ fn main() {
         .build()
         .unwrap_or_else(|e| { panic!("Failed to build PistonWindow: {}", e) });
     while let Some(e) = window.next() {
-        window.draw_2d(&e, |_c, g| {
+        window.draw_2d(&e, |_c, g, _d| {
             clear([0.5, 1.0, 0.5, 1.0], g);
         });
     }
