@@ -317,17 +317,6 @@ where
         }
     }
 
-    /// Returns next event.
-    /// Cleans up after rendering and resizes frame buffers.
-    pub fn next(&mut self) -> Option<Event> {
-        if let Some(e) = self.events.next(&mut self.window) {
-            self.event(&e);
-            Some(e)
-        } else {
-            None
-        }
-    }
-
     /// Let window handle new event.
     /// Cleans up after rendering and resizes frame buffers.
     pub fn event<E: GenericEvent>(&mut self, event: &E) {
@@ -439,5 +428,23 @@ where
 
     fn set_event_settings(&mut self, settings: EventSettings) {
         self.events.set_event_settings(settings);
+    }
+}
+
+impl<W> Iterator for PistonWindow<W>
+where
+    W: Window,
+{
+    type Item = Event;
+
+    /// Returns next event.
+    /// Cleans up after rendering and resizes frame buffers.
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(e) = self.events.next(&mut self.window) {
+            self.event(&e);
+            Some(e)
+        } else {
+            None
+        }
     }
 }
