@@ -99,6 +99,8 @@ use gfx_graphics::{Gfx2d, GfxGraphics};
 use std::error::Error;
 use std::time::Duration;
 
+/// Actual device used by Gfx backend.
+pub type GfxDevice = gfx_device_gl::Device;
 /// Actual factory used by Gfx backend.
 pub type GfxFactory = gfx_device_gl::Factory;
 /// Actual gfx::Stream implementation carried by the window.
