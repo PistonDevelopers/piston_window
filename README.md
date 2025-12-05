@@ -1,56 +1,96 @@
-# piston_window [![Build Status](https://travis-ci.org/PistonDevelopers/piston_window.svg?branch=master)](https://travis-ci.org/PistonDevelopers/piston_window) [![Crates.io](https://img.shields.io/crates/v/piston_window.svg)](https://crates.io/crates/piston_window) [![Crates.io](https://img.shields.io/crates/l/piston_window.svg)](https://github.com/PistonDevelopers/piston_window/blob/master/LICENSE)
-The official Piston convenience window wrapper for the Piston game engine
+# piston_window [![Crates.io](https://img.shields.io/crates/v/piston_window.svg)](https://crates.io/crates/piston_window) [![Crates.io](https://img.shields.io/crates/l/piston_window.svg)](https://github.com/PistonDevelopers/piston_window/blob/master/LICENSE)
+The official Piston Window for the Piston game engine
 
-**Notice! If this is your first time visiting Piston, [start here](https://github.com/PistonDevelopers/piston).**
+### Example
 
-Piston-Window is designed for only one purpose: Convenience.
-
-[Documentation](http://docs.piston.rs/piston_window/piston_window/)
-
-* Reexports everything you need to write 2D interactive applications
-* `.draw_2d` for drawing 2D, and `.draw_3d` for drawing 3D
-* Uses Gfx to work with 3D libraries in the Piston ecosystem
-
-```Rust
-extern crate piston_window;
+```rust no_run
 use piston_window::*;
+
 fn main() {
-    let mut window: PistonWindow = WindowSettings::new("Hello Piston!", (640, 480))
-        .exit_on_esc(true)
-        .build()
-        .unwrap_or_else(|e| { panic!("Failed to build PistonWindow: {}", e) });
+    let mut window: PistonWindow =
+        WindowSettings::new("Hello World!", [512; 2])
+            .build().unwrap();
     while let Some(e) = window.next() {
-        window.draw_2d(&e, |_c, g, _d| {
-            clear([0.5, 1.0, 0.5, 1.0], g);
+        window.draw_2d(&e, |c, g, _| {
+            use graphics::*;
+            clear([0.5, 0.5, 0.5, 1.0], g);
+            rectangle([1.0, 0.0, 0.0, 1.0], // red
+                      [0.0, 0.0, 100.0, 100.0], // rectangle
+                      c.transform, g);
         });
     }
 }
 ```
 
-`PistonWindow` uses Glutin as window back-end by default,
-but you can change to another back-end, for example SDL2 or GLFW by changing the type parameter:
+**If you want to dive into the world of Piston, then you can [start here](https://github.com/PistonDevelopers/piston).**
 
-```Rust
-let mut window: PistonWindow<Sdl2Window> = WindowSettings::new("Hello Piston!", [640, 480])
-    .exit_on_esc(true).build().unwrap();
+### Design
+
+The purpose of this library is to provide an easy-to-use,
+simple-to-get-started and convenient-for-applications API for Piston.
+
+Sets up:
+
+- [wgpu](https://github.com/gfx-rs/wgpu) for 3D rendering.
+- [wgpu_graphics](https://github.com/pistondevelopers/wgpu_graphics)
+for 2D rendering.
+- [winit_window](https://github.com/pistondevelopers/winit_window)
+as window back-end.
+
+With the Cargo feature "batteries" turned on:
+
+- [bevy](https://github.com/bevyengine/bevy) for Entity-Component-System (ECS) paradigm
+- [camera_controllers](https://github.com/PistonDevelopers/camera_controllers.git) for 3D camera
+- [collada](https://github.com/PistonDevelopers/piston_collada) for a popular 3D asset format
+- [dyon](https://github.com/pistondevelopers/dyon.git) for scripting
+- [glft](https://github.com/gltf-rs/gltf) for a popular and efficient 3D asset format for game engines
+- [image](https://github.com/image-rs/image) for reading and saving image formats
+- [kira](https://github.com/tesselode/kira) for Audio
+- [nalgebra](https://github.com/dimforge/nalgebra) for Linear Algebra
+- [piston-ai_behavior](https://github.com/pistondevelopers/ai_behavior.git) for AI behavior trees
+- [piston_meta](https://github.com/pistondevelopers/meta.git) for Meta-Parsing (human readable documents)
+- [piston2d-sprite](https://github.com/pistondevelopers/sprite.git) for 2D sprite animation
+- [rapier2d](https://github.com/dimforge/rapier) for 2D physics
+- [rapier3d](https://github.com/dimforge/rapier) for 3D physics
+- [texture_packer](https://github.com/PistonDevelopers/texture_packer) for texture packing
+- [vecmath](https://github.com/pistondevelopers/vecmath.git) for vector math
+- [wavefront_obj](https://github.com/PistonDevelopers/wavefront_obj.git) for a popular 3D asset format
+
+To enable the "batteries" feature, you add the following in "Cargo.toml":
+
+```text
+piston_window = { version = "*", features = ["batteries"] }
 ```
 
-`PistonWindow` implements `AdvancedWindow`, `Window` and `EventLoop`.
-Nested game loops are supported, so you can have one inside another.
+These libraries are simply reexported under "piston_window::*", e.g. "piston_window::dyon". This means you can add one dependency in your project
+and a reasonable set of libraries to build your game.
 
-```Rust
-while let Some(e) = window.next() {
-    if let Some(button) = e.press_args() {
-        // Intro.
-        while let Some(e) = window.next() {
-            ...
-        }
-    }
-}
-```
+Notice that some of these libraries have turned off certain features to
+reduce the number of dependencies. Consult the Cargo documentation to learn
+how to include more features per dependency.
+
+
+### sRGB
+
+The impl of `BuildFromWindowSettings` in this library turns on
+`WindowSettings::srgb`, because it is more backward compatible.
+
+Most images such as those found on the internet use sRGB,
+that has a non-linear gamma corrected space.
+When rendering 3D, make sure textures and colors are in linear gamma space
+to get correct color transformation.
+Consult the WGPU documentation to learn more about how to do this properly.
+
+For more information about sRGB, see
+https://github.com/PistonDevelopers/piston/issues/1014
+
+### Library dependencies
+
+This library is meant to be used in applications only.
+It is not meant to be depended on by generic libraries.
+Instead, libraries should depend on the lower abstractions,
+such as the [Piston core](https://github.com/pistondevelopers/piston).
+
+### Feedback
 
 Ideas or feedback? Open up an issue [here](https://github.com/pistondevelopers/piston_window/issues).
-
-### Dependency graph
-
-![Dependencies](./Cargo.png)

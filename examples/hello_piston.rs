@@ -11,7 +11,10 @@ fn main() {
 
     window.set_lazy(true);
     while let Some(e) = window.next() {
-        window.draw_2d(&e, |c, g, _| {
+        window.draw_2d(&e, |c, g, device| {
+            use graphics::*;
+
+            let _ = device.poll(wgpu::PollType::wait_indefinitely());
             clear([0.5, 1.0, 0.5, 1.0], g);
             rectangle(
                 [1.0, 0.0, 0.0, 1.0],
@@ -43,6 +46,8 @@ impl InnerApp {
         window.set_title(self.title.into());
         while let Some(e) = window.next() {
             window.draw_2d(&e, |c, g, _| {
+                use graphics::*;
+
                 clear([0.5, 0.5, 1.0, 1.0], g);
                 ellipse(
                     [1.0, 0.0, 0.0, 1.0],
