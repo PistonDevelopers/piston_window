@@ -11,6 +11,7 @@ repository = "https://github.com/pistondevelopers/piston_window.git"
 homepage = "https://github.com/pistondevelopers/piston_window"
 documentation = "https://docs.rs/piston_window"
 exclude = ["*.png"]
+edition = "2024"
 
 [lib]
 
@@ -19,17 +20,64 @@ name = "piston_window"
 
 
 [dependencies]
-gfx = "0.18.1"
-gfx_device_gl = "0.16.2"
+futures = "0.3.31"
 piston = "1.0.0"
-piston2d-gfx_graphics = "0.81.0"
-piston2d-graphics = "0.44.0"
+piston2d-wgpu_graphics = "0.11.0"
+piston2d-graphics = "0.45.0"
 piston-texture = "0.9.0"
-shader_version = "0.7.0"
+pistoncore-winit_window = "0.19.1"
+wgpu = "27.0.1"
 
+# Batteries
+bevy = { version = "0.17.3", optional = true, default-features = false }
+camera_controllers = { version = "0.35.2", optional = true }
+collada = { version = "0.16.0", optional = true }
+gltf = { version = "1.4.1", optional = true }
+kira = { version = "0.11.0", optional = true }
+nalgebra = { version = "0.34.1", optional = true, default-features = false }
+piston-ai_behavior = { version = "0.33.0", optional = true }
+piston_meta = { version = "2.0.0", optional = true }
+piston2d-sprite = { version = "0.68.0", optional = true }
+rapier2d = { version = "0.31.0", optional = true }
+rapier3d = { version = "0.31.0", optional = true }
+vecmath = { version = "1.0.0", optional = true }
+wavefront_obj = { version = "11.0.0", optional = true }
 
-pistoncore-glutin_window = {version = "0.72.0", optional = true}
+[dependencies.dyon]
+version = "0.50.1"
+optional = true
+default-features = false
+features = ["debug_lookup", "dynload", "file", "stdio", "threading", "rand"]
+
+[dependencies.image]
+version = "0.25.9"
+optional = true
+default-features = false
+features = ["png", "gif"]
+
+[dependencies.texture_packer]
+version = "0.30.0"
+optional = true
+default-features = false
+features = ["png"]
 
 [features]
-default = ["glutin"]
-glutin = ["pistoncore-glutin_window"]
+default = []
+batteries = [
+  "bevy",
+  "camera_controllers",
+  "collada",
+  "dyon",
+  "gltf",
+  "image",
+  "kira",
+  "nalgebra",
+  "piston-ai_behavior",
+  "piston_meta",
+  "piston2d-sprite",
+  "rapier2d",
+  "rapier3d",
+  "texture_packer",
+  "vecmath",
+  "wavefront_obj",
+]
