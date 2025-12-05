@@ -34,8 +34,6 @@ Sets up:
 - [wgpu](https://github.com/gfx-rs/wgpu) for 3D rendering.
 - [wgpu_graphics](https://github.com/pistondevelopers/wgpu_graphics)
 for 2D rendering.
-- [winit_window](https://github.com/pistondevelopers/winit_window)
-as window back-end.
 
 With the Cargo feature "batteries" turned on:
 
@@ -55,6 +53,9 @@ With the Cargo feature "batteries" turned on:
 - [texture_packer](https://github.com/PistonDevelopers/texture_packer) for texture packing
 - [vecmath](https://github.com/pistondevelopers/vecmath.git) for vector math
 - [wavefront_obj](https://github.com/PistonDevelopers/wavefront_obj.git) for a popular 3D asset format
+- [winit](https://github.com/rust-windowing/winit) for platform window features
+- [winit_window](https://github.com/pistondevelopers/winit_window)
+as window back-end
 
 To enable the "batteries" feature, you add the following in "Cargo.toml":
 

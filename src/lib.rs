@@ -52,3 +52,7 @@ pub use texture_packer;
 pub use vecmath;
 #[cfg(feature = "batteries")]
 pub use wavefront_obj;
+#[cfg(feature = "batteries")]
+pub use winit;
+#[cfg(feature = "batteries")]
+pub use winit_window;
