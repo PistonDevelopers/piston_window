@@ -43,7 +43,7 @@ With the Cargo feature "batteries" turned on:
 - [camera_controllers](https://github.com/PistonDevelopers/camera_controllers.git) for 3D camera
 - [collada](https://github.com/PistonDevelopers/piston_collada) for a popular 3D asset format
 - [dyon](https://github.com/pistondevelopers/dyon.git) for scripting
-- [glft](https://github.com/gltf-rs/gltf) for a popular and efficient 3D asset format for game engines
+- [gltf](https://github.com/gltf-rs/gltf) for a popular and efficient 3D asset format for game engines
 - [image](https://github.com/image-rs/image) for reading and saving image formats
 - [kira](https://github.com/tesselode/kira) for Audio
 - [nalgebra](https://github.com/dimforge/nalgebra) for Linear Algebra
