@@ -36,7 +36,7 @@ pub struct PistonWindow {
     /// WGPU device.
     pub device: Arc<wgpu::Device>,
     /// WGPU Command buffer queue.
-    pub queue: wgpu::Queue,
+    pub queue: Arc<wgpu::Queue>,
     /// WGPU surface.
     pub surface: wgpu::Surface<'static>,
     /// WGPU surface config.
@@ -91,6 +91,7 @@ impl PistonWindow {
         let surface_config = init_surface_config(&window);
         surface.configure(&device, &surface_config);
         let device = Arc::new(device);
+        let queue = Arc::new(queue);
         let g2d = Wgpu2d::new(device.clone(), &surface_config);
         let events = Events::new(EventSettings::new());
         PistonWindow {
@@ -107,8 +108,8 @@ impl PistonWindow {
 
 impl PistonWindow {
     /// Creates context used to create and update textures.
-    pub fn create_texture_context<'a>(&'a self) -> TextureContext<'a> {
-        TextureContext::from_parts(&self.device, &self.queue)
+    pub fn create_texture_context(&self) -> TextureContext {
+        TextureContext::from_parts(self.device.clone(), self.queue.clone())
     }
 
     /// Loads font from a path.

@@ -1,7 +1,7 @@
 [package]
 
 name = "piston_window"
-version = "0.135.0"
+version = "0.136.0"
 authors = ["bvssvni <bvssvni@gmail.com>"]
 keywords = ["window", "piston", "game", "engine", "gamedev"]
 description = "The official Piston Window for the Piston game engine"
@@ -22,7 +22,7 @@ name = "piston_window"
 [dependencies]
 futures = "0.3.31"
 piston = "1.0.0"
-piston2d-wgpu_graphics = "0.11.0"
+piston2d-wgpu_graphics = "0.12.0"
 piston2d-graphics = "0.45.0"
 piston-texture = "0.9.0"
 pistoncore-winit_window = "0.19.1"
