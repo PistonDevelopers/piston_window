@@ -1,10 +1,10 @@
 [package]
 
 name = "piston_window"
-version = "0.134.0"
+version = "0.134.1"
 authors = ["bvssvni <bvssvni@gmail.com>"]
 keywords = ["window", "piston"]
-description = "The official Piston window wrapper for the Piston game engine"
+description = "The official Piston Window for the Piston game engine"
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/pistondevelopers/piston_window.git"
