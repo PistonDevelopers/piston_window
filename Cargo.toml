@@ -1,9 +1,9 @@
 [package]
 
 name = "piston_window"
-version = "0.134.1"
+version = "0.134.2"
 authors = ["bvssvni <bvssvni@gmail.com>"]
-keywords = ["window", "piston"]
+keywords = ["window", "piston", "game", "engine", "gamedev"]
 description = "The official Piston Window for the Piston game engine"
 license = "MIT"
 readme = "README.md"
