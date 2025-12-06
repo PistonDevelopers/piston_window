@@ -34,9 +34,9 @@ Sets up:
 - [piston](https://github.com/PistonDevelopers/piston.git) for the Piston framework
 - [piston-texture](https://github.com/pistondevelopers/texture.git) for generic textures
 - [piston2d-graphics](https://github.com/pistondevelopers/graphics.git) for 2D graphics
-- [wgpu](https://github.com/gfx-rs/wgpu) for 3D rendering
-- [wgpu_graphics](https://github.com/pistondevelopers/wgpu_graphics)
+- [piston2d-wgpu_graphics](https://github.com/pistondevelopers/wgpu_graphics)
 for 2D rendering
+- [wgpu](https://github.com/gfx-rs/wgpu) for 3D rendering
 
 With the Cargo feature "batteries" turned on:
 
