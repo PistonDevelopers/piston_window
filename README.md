@@ -67,7 +67,7 @@ piston_window = { version = "*", features = ["batteries"] }
 ```
 
 These libraries are simply reexported under "piston_window::*", e.g. "piston_window::dyon". This means you can add one dependency in your project
-and a reasonable set of libraries to build your game.
+and get a reasonable set of libraries to build your game.
 
 Notice that some of these libraries have turned off certain features to
 reduce the number of dependencies. Consult the Cargo documentation to learn
