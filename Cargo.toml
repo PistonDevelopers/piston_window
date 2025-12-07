@@ -1,7 +1,7 @@
 [package]
 
 name = "piston_window"
-version = "0.136.0"
+version = "0.137.0"
 authors = ["bvssvni <bvssvni@gmail.com>"]
 keywords = ["window", "piston", "game", "engine", "gamedev"]
 description = "The official Piston Window for the Piston game engine"
@@ -25,7 +25,7 @@ piston = "1.0.0"
 piston2d-wgpu_graphics = "0.12.0"
 piston2d-graphics = "0.45.0"
 piston-texture = "0.9.0"
-pistoncore-winit_window = "0.19.1"
+pistoncore-winit_window = "0.20.1"
 wgpu = "27.0.1"
 
 # Batteries

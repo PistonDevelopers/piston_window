@@ -49,6 +49,8 @@ With the Cargo feature "batteries" turned on:
 - [kira](https://github.com/tesselode/kira) for Audio
 - [nalgebra](https://github.com/dimforge/nalgebra) for Linear Algebra
 - [piston-ai_behavior](https://github.com/pistondevelopers/ai_behavior.git) for AI behavior trees
+- [pistoncore-winit_window](https://github.com/pistondevelopers/winit_window)
+as window back-end
 - [piston_meta](https://github.com/pistondevelopers/meta.git) for Meta-Parsing (human readable documents)
 - [piston2d-sprite](https://github.com/pistondevelopers/sprite.git) for 2D sprite animation
 - [rapier2d](https://github.com/dimforge/rapier) for 2D physics
@@ -57,8 +59,6 @@ With the Cargo feature "batteries" turned on:
 - [vecmath](https://github.com/pistondevelopers/vecmath.git) for vector math
 - [wavefront_obj](https://github.com/PistonDevelopers/wavefront_obj.git) for a popular 3D asset format
 - [winit](https://github.com/rust-windowing/winit) for platform window features
-- [winit_window](https://github.com/pistondevelopers/winit_window)
-as window back-end
 
 To enable the "batteries" feature, you add the following in "Cargo.toml":
 
