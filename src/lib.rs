@@ -9,7 +9,7 @@
 /// Using the name "prelude" also suppresses the wildcard import warning from clippy.
 pub mod prelude;
 
-pub mod piston_window;
+pub mod pistonwindow;
 
 pub use prelude::*;
 
@@ -48,6 +48,10 @@ pub use rapier2d;
 pub use rapier3d;
 #[cfg(feature = "batteries")]
 pub use texture_packer;
+#[cfg(feature = "batteries")]
+pub use turbine;
+#[cfg(feature = "batteries")]
+pub use turbine_scene3d_wgpu;
 #[cfg(feature = "batteries")]
 pub use vecmath;
 #[cfg(feature = "batteries")]
