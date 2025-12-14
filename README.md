@@ -56,6 +56,8 @@ as window back-end
 - [rapier2d](https://github.com/dimforge/rapier) for 2D physics
 - [rapier3d](https://github.com/dimforge/rapier) for 3D physics
 - [texture_packer](https://github.com/PistonDevelopers/texture_packer) for texture packing
+- [turbine_scene3d-wgpu](https://github.com/PistonDevelopers/turbine/tree/master/scene3d/backends/wgpu) for WGPU backend for Turbine-Scene3D
+- [turbine](https://github.com/PistonDevelopers/turbine) for 3D content production
 - [vecmath](https://github.com/pistondevelopers/vecmath.git) for vector math
 - [wavefront_obj](https://github.com/PistonDevelopers/wavefront_obj.git) for a popular 3D asset format
 - [winit](https://github.com/rust-windowing/winit) for platform window features
