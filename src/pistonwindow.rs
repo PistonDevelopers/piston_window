@@ -113,10 +113,10 @@ impl PistonWindow {
     }
 
     /// Loads font from a path.
-    pub fn load_font<'a, P: AsRef<std::path::Path>>(
-        &'a self,
+    pub fn load_font<P: AsRef<std::path::Path>>(
+        &self,
         path: P,
-    ) -> Result<Glyphs<'a>, std::io::Error> {
+    ) -> Result<Glyphs<'static>, std::io::Error> {
         Glyphs::new(
             path,
             self.create_texture_context(),
