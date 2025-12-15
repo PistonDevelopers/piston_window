@@ -44,15 +44,20 @@ With the Cargo feature "batteries" turned on:
 - [camera_controllers](https://github.com/PistonDevelopers/camera_controllers.git) for 3D camera
 - [collada](https://github.com/PistonDevelopers/piston_collada) for a popular 3D asset format
 - [dyon](https://github.com/pistondevelopers/dyon.git) for scripting
+- [find_folder](https://github.com/pistondevelopers/find_folder) for searching for a folder from current directory
 - [gltf](https://github.com/gltf-rs/gltf) for a popular and efficient 3D asset format for game engines
 - [image](https://github.com/image-rs/image) for reading and saving image formats
 - [kira](https://github.com/tesselode/kira) for Audio
 - [nalgebra](https://github.com/dimforge/nalgebra) for Linear Algebra
 - [piston-ai_behavior](https://github.com/pistondevelopers/ai_behavior.git) for AI behavior trees
+- [piston-button_controller](https://github.com/pistondevelopers/button_controller) for UI button logic
 - [pistoncore-winit_window](https://github.com/pistondevelopers/winit_window)
 as window back-end
 - [piston_meta](https://github.com/pistondevelopers/meta.git) for Meta-Parsing (human readable documents)
+- [piston2d-deform_grid](https://github.com/PistonDevelopers/deform_grid) for deforming textures in 2D
+- [piston2d-drag_controller](https://github.com/PistonDevelopers/drag_controller) for mouse drag logic
 - [piston2d-sprite](https://github.com/pistondevelopers/sprite.git) for 2D sprite animation
+- [rand](https://github.com/rust-random/rand) for generating random numbers
 - [rapier2d](https://github.com/dimforge/rapier) for 2D physics
 - [rapier3d](https://github.com/dimforge/rapier) for 3D physics
 - [texture_packer](https://github.com/PistonDevelopers/texture_packer) for texture packing
