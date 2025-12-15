@@ -29,7 +29,13 @@ pub use camera_controllers;
 #[cfg(feature = "batteries")]
 pub use collada;
 #[cfg(feature = "batteries")]
+pub use deform_grid;
+#[cfg(feature = "batteries")]
+pub use drag_controller;
+#[cfg(feature = "batteries")]
 pub use dyon;
+#[cfg(feature = "find_folder")]
+pub use find_folder;
 #[cfg(feature = "batteries")]
 pub use gltf;
 #[cfg(feature = "batteries")]
@@ -42,6 +48,8 @@ pub use nalgebra;
 pub use piston_meta;
 #[cfg(feature = "batteries")]
 pub use sprite;
+#[cfg(feature = "rand")]
+pub use rand;
 #[cfg(feature = "batteries")]
 pub use rapier2d;
 #[cfg(feature = "batteries")]
