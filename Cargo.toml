@@ -32,12 +32,16 @@ wgpu = "27.0.1"
 bevy = { version = "0.17.3", optional = true, default-features = false }
 camera_controllers = { version = "0.36.0", optional = true }
 collada = { version = "0.17.0", optional = true }
+piston2d-deform_grid = { version = "0.15.0", optional = true }
+piston2d-drag_controller = { version = "0.30.0", optional = true }
+find_folder = { version = "0.3.0", optional = true }
 gltf = { version = "1.4.1", optional = true }
 kira = { version = "0.11.0", optional = true }
 nalgebra = { version = "0.34.1", optional = true, default-features = false }
 piston-ai_behavior = { version = "0.33.0", optional = true }
 piston_meta = { version = "2.0.0", optional = true }
 piston2d-sprite = { version = "0.69.0", optional = true }
+rand = { version = "0.9.2", optional = true }
 rapier2d = { version = "0.31.0", optional = true }
 rapier3d = { version = "0.31.0", optional = true }
 turbine = { version = "0.2.0", optional = true }
@@ -71,13 +75,17 @@ batteries = [
   "camera_controllers",
   "collada",
   "dyon",
+  "find_folder",
   "gltf",
   "image",
   "kira",
   "nalgebra",
   "piston-ai_behavior",
   "piston_meta",
+  "piston2d-deform_grid",
+  "piston2d-drag_controller",
   "piston2d-sprite",
+  "rand",
   "rapier2d",
   "rapier3d",
   "texture_packer",
