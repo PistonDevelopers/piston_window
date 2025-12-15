@@ -97,3 +97,12 @@ batteries = [
   "wavefront_obj",
   "winit",
 ]
+full = [
+  "batteries",
+  # Bevy is currently broken, see https://github.com/bevyengine/bevy/issues/22127.
+  # "bevy/default",
+  "dyon/default",
+  "image/default",
+  "nalgebra/default",
+  "texture_packer/common",
+]
