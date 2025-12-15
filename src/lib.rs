@@ -25,6 +25,8 @@ pub use ai_behavior;
 #[cfg(feature = "batteries")]
 pub use bevy;
 #[cfg(feature = "batteries")]
+pub use button_controller;
+#[cfg(feature = "batteries")]
 pub use camera_controllers;
 #[cfg(feature = "batteries")]
 pub use collada;
