@@ -31,6 +31,8 @@ pub use camera_controllers;
 #[cfg(feature = "batteries")]
 pub use collada;
 #[cfg(feature = "batteries")]
+pub use current;
+#[cfg(feature = "batteries")]
 pub use deform_grid;
 #[cfg(feature = "batteries")]
 pub use drag_controller;

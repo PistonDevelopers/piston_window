@@ -32,6 +32,7 @@ wgpu = "27.0.1"
 bevy = { version = "0.17.3", optional = true, default-features = false }
 camera_controllers = { version = "0.36.0", optional = true }
 collada = { version = "0.17.0", optional = true }
+current = { version = "1.0.1", optional = true }
 piston2d-deform_grid = { version = "0.15.0", optional = true }
 piston2d-drag_controller = { version = "0.30.0", optional = true }
 find_folder = { version = "0.3.0", optional = true }
@@ -76,6 +77,7 @@ batteries = [
   "piston-button_controller",
   "camera_controllers",
   "collada",
+  "current",
   "dyon",
   "find_folder",
   "gltf",
