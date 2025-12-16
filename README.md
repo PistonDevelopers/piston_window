@@ -1,7 +1,19 @@
 # piston_window [![Crates.io](https://img.shields.io/crates/v/piston_window.svg)](https://crates.io/crates/piston_window) [![Crates.io](https://img.shields.io/crates/l/piston_window.svg)](https://github.com/PistonDevelopers/piston_window/blob/master/LICENSE)
 The official Piston Window for the Piston game engine
 
-### Example
+### Dyon scripting
+
+To install the Piston runtime for Dyon, type the following in the Terminal:
+
+`> cargo install piston_window --features="batteries" --example piston`
+
+To run scripts, type:
+
+`> piston <my_game.dyon>`
+
+For extending the API with your own features, see the "piston_script" module.
+
+### Example: Rust
 
 ```rust no_run
 use piston_window::*;
@@ -22,6 +34,49 @@ fn main() {
 }
 ```
 
+### Example: Dyon
+
+Save the following in a file "hello_world.dyon":
+
+```dyon no_run
+fn main() {
+    set_window(title: "Piston example: hello_world.dyon")
+    println("Hit any button to swap the font")
+
+    font := font_fira_sans_regular()
+    ~ draw_list := []
+    loop {
+        if !next_event() {break}
+
+        if render() {
+            clear(color: #ffffff)
+
+            text(font: font, color: #000000, size: 40, pos: (100, 100),
+                 string: "Hello world!")
+
+            draw(draw_list)
+            clear(mut draw_list)
+        }
+        if press() {
+            if font == font_fira_sans_regular() {
+                font = font_hack_regular()
+            } else {
+                font = font_fira_sans_regular()
+            }
+        }
+    }
+}
+
+font_fira_sans_regular() = 0
+font_hack_regular() = 1
+```
+
+Run it using the command:
+
+`> piston "hello_world.dyon"`
+
+Hit any button to swap the font.
+
 **If you want to dive into the world of Piston, then you can [start here](https://github.com/PistonDevelopers/piston).**
 
 ### Design
@@ -40,6 +95,7 @@ for 2D rendering
 
 With the Cargo feature "batteries" turned on:
 
+- A "piston_script" module for Dyon scripting with the Piston game engine
 - [bevy](https://github.com/bevyengine/bevy) for Entity-Component-System (ECS) paradigm
 - [camera_controllers](https://github.com/PistonDevelopers/camera_controllers.git) for 3D camera
 - [collada](https://github.com/PistonDevelopers/piston_collada) for a popular 3D asset format
