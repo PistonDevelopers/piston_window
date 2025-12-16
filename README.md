@@ -77,6 +77,8 @@ Run it using the command:
 
 Hit any button to swap the font.
 
+### More resources
+
 **If you want to dive into the world of Piston, then you can [start here](https://github.com/PistonDevelopers/piston).**
 
 ### Design
