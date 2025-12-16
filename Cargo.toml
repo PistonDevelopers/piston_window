@@ -48,6 +48,7 @@ rapier2d = { version = "0.31.0", optional = true }
 rapier3d = { version = "0.31.0", optional = true }
 turbine = { version = "0.3.0", optional = true }
 turbine_scene3d-wgpu = { version = "0.3.0", optional = true }
+underscore_args = { version = "1.0.0", optional = true }
 vecmath = { version = "1.0.0", optional = true }
 wavefront_obj = { version = "11.0.0", optional = true }
 winit = { version = "0.30.12", optional = true }
@@ -95,6 +96,7 @@ batteries = [
   "texture_packer",
   "turbine",
   "turbine_scene3d-wgpu",
+  "underscore_args",
   "vecmath",
   "wavefront_obj",
   "winit",
