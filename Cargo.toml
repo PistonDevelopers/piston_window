@@ -10,7 +10,7 @@ readme = "README.md"
 repository = "https://github.com/pistondevelopers/piston_window.git"
 homepage = "https://github.com/pistondevelopers/piston_window"
 documentation = "https://docs.rs/piston_window"
-exclude = ["*.png"]
+exclude = ["*.png", "test_assets/*"]
 edition = "2024"
 
 [lib]
@@ -22,10 +22,10 @@ name = "piston_window"
 [dependencies]
 futures = "0.3.31"
 piston = "1.0.0"
-piston2d-wgpu_graphics = "0.12.0"
+piston2d-wgpu_graphics = "0.13.0"
 piston2d-graphics = "0.45.0"
 piston-texture = "0.9.0"
-pistoncore-winit_window = "0.20.1"
+pistoncore-winit_window = "0.20.2"
 wgpu = "27.0.1"
 
 # Batteries

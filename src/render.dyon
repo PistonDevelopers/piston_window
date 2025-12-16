@@ -1,0 +1,234 @@
+/*
+Wraps a nice interface around draw list commands.
+*/
+
+/// Clears both color buffer and stencil buffer.
+fn clear__color(color: vec4) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["clear", color])
+}
+
+fn clear__colorbuf(color: vec4) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["clear__colorbuf", color])
+}
+
+fn clear__stencil(v: f64) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["clear__stencil", v])
+}
+
+fn line__color_radius_from_to(color: vec4, radius: f64, from: vec4, to: vec4)
+~ mut draw_list: [[]] {
+    push(mut draw_list, ["line__color_radius_from_to", color, radius, from, to])
+}
+
+fn rectangle__color_corner_size(color: vec4, corner: vec4, size: vec4)
+~ mut draw_list: [[]] {
+    push(mut draw_list, ["rectangle__color_corner_size", color, corner, size])
+}
+
+fn rectangle__border_color_corner_size(radius: f64, color: vec4, corner: vec4, size: vec4)
+~ mut draw_list: [[]] {
+    push(mut draw_list, ["rectangle__border_color_corner_size", radius, color, corner, size])
+}
+
+fn ellipse__color_corner_size(color: vec4, corner: vec4, size: vec4)
+~ mut draw_list: [[]] {
+    ellipse(color: color, corner: corner, size: size, resolution: 16)
+}
+
+fn ellipse__color_corner_size_resolution
+(color: vec4, corner: vec4, size: vec4, resolution: f64)
+~ mut draw_list: [[]] {
+    push(mut draw_list, ["ellipse__color_corner_size_resolution", color, corner, size, resolution])
+}
+
+fn ellipse__border_color_corner_size_resolution
+(radius: f64, color: vec4, corner: vec4, size: vec4, resolution: f64)
+~ mut draw_list: [[]] {
+    push(mut draw_list, ["ellipse__border_color_corner_size_resolution",
+                         radius, color, corner, size, resolution])
+}
+
+fn ellipse__border_color_corner_size(radius: f64, color: vec4, corner: vec4, size: vec4)
+~ mut draw_list: [[]] {
+    ellipse(border: radius, color: color, corner: corner, size: size, resolution: 16)
+}
+
+fn circle__color_center_radius(color: vec4, center: vec4, radius: f64)
+~ mut draw_list: [[]] {
+    width := 2 * radius
+    ellipse(color: color, corner: center - radius, size: (width, width))
+}
+
+fn circle__color_center_radius_resolution(color: vec4, center: vec4, radius: f64, resolution: f64)
+~ mut draw_list: [[]] {
+    width := 2 * radius
+    ellipse(color: color, corner: center - radius, size: (width, width), resolution: resolution)
+}
+
+fn polygon__color_points(color: vec4, points: [vec4]) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["polygon__color_points", color, points])
+}
+
+fn text__font_color_size_pos_string(font: f64, color: vec4, size: f64, pos: vec4, text: str)
+~ mut draw_list: [[]] {
+    push(mut draw_list, ["text__font_color_size_pos_string", font, color, size, pos, text])
+}
+
+fn image__texture_pos_color(texture: f64, pos: vec4, color: vec4)
+~ mut draw_list: [[]] {
+    push(mut draw_list, ["image__texture_pos_color", texture, pos, color])
+}
+
+fn image__texture_pos(texture: f64, pos: vec4)
+~ mut draw_list: [[]] {
+    push(mut draw_list, ["image__texture_pos_color", texture, pos, #ffffff])
+}
+
+fn image__texture_pos_alpha(texture: f64, pos: vec4, alpha: f64)
+~ mut draw_list: [[]] {
+    push(mut draw_list, ["image__texture_pos_color", texture, pos, (xyz #ffffff, alpha)])
+}
+
+fn image__texture_pos_color_srccorner_srcsize
+(texture: f64, pos: vec4, color: vec4, srccorner: vec4, srcsize: vec4)
+~ mut draw_list: [[]] {
+    push(mut draw_list, [
+        "image__texture_pos_color_srccorner_srcsize",
+        texture, pos, color, srccorner, srcsize
+    ])
+}
+
+fn image__texture_pos_srccorner_srcsize
+(texture: f64, pos: vec4, srccorner: vec4, srcsize: vec4)
+~ mut draw_list: [[]] {
+    push(mut draw_list, [
+        "image__texture_pos_color_srccorner_srcsize",
+        texture, pos, #ffffff, srccorner, srcsize
+    ])
+}
+
+fn image__texture_pos_alpha_srccorner_srcsize
+(texture: f64, pos: vec4, alpha: f64, srccorner: vec4, srcsize: vec4)
+~ mut draw_list: [[]] {
+    push(mut draw_list, [
+        "image__texture_pos_color_srccorner_srcsize",
+        texture, pos, (xyz #ffffff, alpha), srccorner, srcsize
+    ])
+}
+
+fn transform__rx_ry(rx: vec4, ry: vec4) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["transform__rx_ry", rx, ry])
+}
+
+fn rel_transform__rx_ry(rx: vec4, ry: vec4) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["rel_transform__rx_ry", rx, ry])
+}
+
+fn translate__pos(pos: vec4) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["rel_transform__rx_ry", (1, 0, x(pos)), (0, 1, y(pos))])
+}
+
+fn rotate__rad(ang: f64) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["rel_transform__rx_ry", (cos(ang), -sin(ang)), (sin(ang), cos(ang))])
+}
+
+fn rotate__rad_at(ang: f64, pos: vec4) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["rel_transform__rx_ry",
+        (cos(ang), -sin(ang), -x(pos) * cos(ang) + y(pos) * sin(ang) + x(pos)),
+        (sin(ang), cos(ang), -x(pos) * sin(ang) - y(pos) * cos(ang) + y(pos)),
+    ])
+}
+
+fn scale__pos(pos: vec4) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["rel_transform__rx_ry", (x(pos), 0), (0, y(pos))])
+}
+
+fn scale__pos_at(pos: vec4, at: vec4) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["rel_transform__rx_ry",
+        (x(pos), 0, (1 - x(pos)) * x(at)),
+        (0, y(pos), (1 - y(pos)) * y(at)),
+    ])
+}
+
+fn zoom__fact(fact: f64) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["rel_transform__rx_ry", (fact, 0), (0, fact)])
+}
+
+fn zoom__fact_at(fact: f64, at: vec4) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["rel_transform__rx_ry",
+        (fact, 0, (1 - fact) * x(at)),
+        (0, fact, (1 - fact) * y(at)),
+    ])
+}
+
+fn shear__pos(pos: vec4) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["rel_transform__rx_ry", (1, x(pos)), (y(pos), 1)])
+}
+
+fn shear__pos_at(pos: vec4, at: vec4) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["rel_transform__rx_ry",
+        (1, x(pos), x(pos) * -y(at)),
+        (y(pos), 1, y(pos) * -x(at)),
+    ])
+}
+
+fn draw_state_alpha() ~ mut draw_list: [[]] {
+    push(mut draw_list, ["draw_state_alpha"])
+}
+
+fn draw_state_clip() ~ mut draw_list: [[]] {
+    push(mut draw_list, ["draw_state_clip"])
+}
+
+fn draw_state_increment() ~ mut draw_list: [[]] {
+    push(mut draw_list, ["draw_state_increment"])
+}
+
+fn draw_state_inside() ~ mut draw_list: [[]] {
+    push(mut draw_list, ["draw_state_inside"])
+}
+
+fn draw_state_outside() ~ mut draw_list: [[]] {
+    push(mut draw_list, ["draw_state_outside"])
+}
+
+fn blend_alpha() ~ mut draw_list: [[]] {
+    push(mut draw_list, ["blend_alpha"])
+}
+
+fn blend_add() ~ mut draw_list: [[]] {
+    push(mut draw_list, ["blend_add"])
+}
+
+fn blend_lighter() ~ mut draw_list: [[]] {
+    push(mut draw_list, ["blend_lighter"])
+}
+
+fn blend_multiply() ~ mut draw_list: [[]] {
+    push(mut draw_list, ["blend_multiply"])
+}
+
+fn blend_invert() ~ mut draw_list: [[]] {
+    push(mut draw_list, ["blend_invert"])
+}
+
+fn scissor__corner_size(corner: vec4, size: vec4)
+~ mut draw_list: [[]] {
+    push(mut draw_list, ["scissor__corner_size", corner, size])
+}
+
+fn stencil__clip(v: f64) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["stencil__clip", v])
+}
+
+fn stencil__inside(v: f64) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["stencil__inside", v])
+}
+
+fn stencil__outside(v: f64) ~ mut draw_list: [[]] {
+    push(mut draw_list, ["stencil__outside", v])
+}
+
+fn stencil_increment() ~ mut draw_list: [[]] {
+    push(mut draw_list, ["stencil_increment"])
+}

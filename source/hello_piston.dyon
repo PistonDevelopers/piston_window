@@ -1,0 +1,53 @@
+fn main() {
+    title := "Hello Piston! (press any key to enter inner loop)"
+
+    set_window(size: (640, 480))
+    set_window(title: title)
+    loop {
+        if !next_event() {break}
+        if render() {
+            ~ draw_list := []
+
+            clear(color: (0.5, 1.0, 0.5, 1.0))
+            rectangle(
+                color: (1.0, 0.0, 0.0, 1.0),
+                corner: (50, 50),
+                size: (100, 100),
+            )
+
+            draw(draw_list)
+        }
+        if press() {
+            inner_app(
+                title: "Inner loop (press X to exit inner loop)",
+                exitbutton: key_x(),
+            )
+        }
+    }
+}
+
+key_x() = 120
+
+fn inner_app__title_exitbutton(title: str, exit_button: f64) {
+    set_window(title: title)
+
+    loop {
+        if !next_event() {break}
+        if render() {
+            ~ draw_list := []
+
+            clear(color: (0.5, 0.5, 1.0, 1.0))
+            ellipse(
+                color: (1.0, 0.0, 0.0, 1.0),
+                corner: (50, 50),
+                size: (100, 100),
+                resolution: 128,
+            )
+
+            draw(draw_list)
+        }
+        if press() {
+            if press_keyboard_key() == some(exit_button) {break}
+        }
+    }
+}
