@@ -65,6 +65,8 @@ pub use turbine;
 #[cfg(feature = "batteries")]
 pub use turbine_scene3d_wgpu;
 #[cfg(feature = "batteries")]
+pub use underscore_args;
+#[cfg(feature = "batteries")]
 pub use vecmath;
 #[cfg(feature = "batteries")]
 pub use wavefront_obj;
