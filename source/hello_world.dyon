@@ -1,5 +1,6 @@
 fn main() {
     set_window(title: "Piston example: hello_world.dyon")
+    println("Hit any button to swap the font")
 
     font := font_fira_sans_regular()
     ~ draw_list := []
