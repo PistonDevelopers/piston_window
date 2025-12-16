@@ -10,6 +10,8 @@
 pub mod prelude;
 
 pub mod pistonwindow;
+#[cfg(feature = "batteries")]
+pub mod piston_script;
 
 pub use prelude::*;
 
