@@ -1,0 +1,29 @@
+fn main() {
+    set_window(title: "Piston example: hello_world.dyon")
+
+    font := font_fira_sans_regular()
+    ~ draw_list := []
+    loop {
+        if !next_event() {break}
+
+        if render() {
+            clear(color: #ffffff)
+
+            text(font: font, color: #000000, size: 40, pos: (100, 100),
+                 string: "Hello world!")
+
+            draw(draw_list)
+            clear(mut draw_list)
+        }
+        if press() {
+            if font == font_fira_sans_regular() {
+                font = font_hack_regular()
+            } else {
+                font = font_fira_sans_regular()
+            }
+        }
+    }
+}
+
+font_fira_sans_regular() = 0
+font_hack_regular() = 1

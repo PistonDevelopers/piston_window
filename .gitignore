@@ -29,3 +29,5 @@ watch.sh
 !/bin/assets/
 
 Cargo.lock
+/test_assets/
+source/test.dyon

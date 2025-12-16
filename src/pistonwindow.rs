@@ -16,7 +16,7 @@ use piston::{
 };
 use graphics::{Context};
 
-use wgpu_graphics::{TextureContext, Wgpu2d, WgpuGraphics};
+use wgpu_graphics::{TextureContext, TextureSettings, Wgpu2d, WgpuGraphics};
 use std::error::Error;
 use std::time::Duration;
 use std::sync::Arc;
@@ -106,6 +106,15 @@ impl PistonWindow {
     }
 }
 
+/// Supported built-in fonts.
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum BuiltInFont {
+    /// FiraSans-Regular.
+    FiraSansRegular,
+    /// Hack-Regular.
+    HackRegular,
+}
+
 impl PistonWindow {
     /// Creates context used to create and update textures.
     pub fn create_texture_context(&self) -> TextureContext {
@@ -116,11 +125,30 @@ impl PistonWindow {
     pub fn load_font<P: AsRef<std::path::Path>>(
         &self,
         path: P,
+        texture_settings: TextureSettings,
     ) -> Result<Glyphs<'static>, std::io::Error> {
         Glyphs::new(
             path,
             self.create_texture_context(),
-            texture::TextureSettings::new(),
+            texture_settings,
+        )
+    }
+
+    /// Loads font from a path.
+    pub fn load_builtin_font(
+        &self,
+        font: BuiltInFont,
+        texture_settings: TextureSettings,
+    ) -> Result<Glyphs<'static>, ()> {
+        use BuiltInFont::*;
+        let bytes = match font {
+            FiraSansRegular => &include_bytes!("../assets/FiraSans-Regular.ttf")[..],
+            HackRegular => &include_bytes!("../assets/Hack-Regular.ttf")[..],
+        };
+        Glyphs::from_bytes(
+            &bytes,
+            self.create_texture_context(),
+            texture_settings,
         )
     }
 
