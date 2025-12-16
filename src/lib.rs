@@ -49,6 +49,8 @@ pub use kira;
 #[cfg(feature = "batteries")]
 pub use nalgebra;
 #[cfg(feature = "batteries")]
+pub use dyon_interactive;
+#[cfg(feature = "batteries")]
 pub use piston_meta;
 #[cfg(feature = "batteries")]
 pub use sprite;

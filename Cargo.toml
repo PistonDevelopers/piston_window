@@ -33,6 +33,7 @@ bevy = { version = "0.17.3", optional = true, default-features = false }
 camera_controllers = { version = "0.36.0", optional = true }
 collada = { version = "0.17.0", optional = true }
 current = { version = "1.0.1", optional = true }
+dyon = { version = "0.50.1", optional = true }
 piston2d-deform_grid = { version = "0.15.0", optional = true }
 piston2d-drag_controller = { version = "0.30.0", optional = true }
 find_folder = { version = "0.3.0", optional = true }
@@ -41,6 +42,7 @@ kira = { version = "0.11.0", optional = true }
 nalgebra = { version = "0.34.1", optional = true, default-features = false }
 piston-ai_behavior = { version = "0.33.0", optional = true }
 piston-button_controller = { version = "0.13.0", optional = true }
+piston-dyon_interactive = { version = "0.47.1", optional = true }
 piston_meta = { version = "2.0.0", optional = true }
 piston2d-sprite = { version = "0.69.0", optional = true }
 rand = { version = "0.9.2", optional = true }
@@ -52,12 +54,6 @@ underscore_args = { version = "1.0.0", optional = true }
 vecmath = { version = "1.0.0", optional = true }
 wavefront_obj = { version = "11.0.0", optional = true }
 winit = { version = "0.30.12", optional = true }
-
-[dependencies.dyon]
-version = "0.50.1"
-optional = true
-default-features = false
-features = ["debug_lookup", "dynload", "file", "stdio", "threading", "rand"]
 
 [dependencies.image]
 version = "0.25.9"
@@ -86,6 +82,7 @@ batteries = [
   "kira",
   "nalgebra",
   "piston-ai_behavior",
+  "piston-dyon_interactive",
   "piston_meta",
   "piston2d-deform_grid",
   "piston2d-drag_controller",
@@ -105,7 +102,6 @@ full = [
   "batteries",
   # Bevy is currently broken, see https://github.com/bevyengine/bevy/issues/22127.
   # "bevy/default",
-  "dyon/default",
   "image/default",
   "nalgebra/default",
   "texture_packer/common",
