@@ -5,11 +5,11 @@ The official Piston Window for the Piston game engine
 
 To install the Piston runtime for Dyon, type the following in the Terminal:
 
-`> cargo install piston_window --features="batteries" --example piston`
+`cargo install piston_window --features="batteries" --example piston`
 
 To run scripts, type:
 
-`> piston <my_game.dyon>`
+`piston <my_game.dyon>`
 
 For extending the API with your own features, see the "piston_script" module.
 
@@ -73,7 +73,7 @@ font_hack_regular() = 1
 
 Run it using the command:
 
-`> piston "hello_world.dyon"`
+`piston "hello_world.dyon"`
 
 Hit any button to swap the font.
 
