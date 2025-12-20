@@ -122,7 +122,6 @@ fn load_module(file: &str, mut module: Module) -> Option<Module> {
     use dyon_interactive::add_functions;
 
     add_functions::<PistonWindow, TextureContext, GlyphCache>(&mut module);
-    module.add(Arc::new("render_source".into()), render_source, Dfn::nl(vec![], Type::Str));
     module.add(Arc::new("draw".into()), draw, Dfn::nl(vec![Type::array()], Type::Void));
     module.add(Arc::new("next_event".into()),
         next_event, Dfn::nl(vec![], Type::Bool));
@@ -159,8 +158,8 @@ fn load_module(file: &str, mut module: Module) -> Option<Module> {
     );
 
     if error(dyon::load_str(
-        "render.dyon",
-        Arc::new(include_str!("../src/render.dyon").into()),
+        "graphics2d.dyon",
+        Arc::new(include_str!("../src/graphics2d.dyon").into()),
         &mut module
     )) {
         return None;
@@ -183,8 +182,6 @@ mod dyon_functions {
     use current::Current;
     use std::sync::Arc;
     use image::RgbaImage;
-
-    dyon_fn!{fn render_source() -> String {include_str!("../src/render.dyon").into()}}
 
     pub fn load_font(rt: &mut Runtime) -> Result<Variable, String> {
         use dyon::embed::PushVariable;

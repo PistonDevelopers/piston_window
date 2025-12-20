@@ -1,17 +1,5 @@
-# piston_window [![Crates.io](https://img.shields.io/crates/v/piston_window.svg)](https://crates.io/crates/piston_window) [![Crates.io](https://img.shields.io/crates/l/piston_window.svg)](https://github.com/PistonDevelopers/piston_window/blob/master/LICENSE)
+# PistonWindow [![Crates.io](https://img.shields.io/crates/v/piston_window.svg)](https://crates.io/crates/piston_window) [![Crates.io](https://img.shields.io/crates/l/piston_window.svg)](https://github.com/PistonDevelopers/piston_window/blob/master/LICENSE)
 The official Piston Window for the Piston game engine
-
-### Dyon scripting
-
-To install the Piston runtime for Dyon, type the following in the Terminal:
-
-`cargo install piston_window --features="batteries" --example piston`
-
-To run scripts, type:
-
-`piston <my_game.dyon>`
-
-For extending the API with your own features, see the "piston_script" module.
 
 ### Example: Rust
 
@@ -33,6 +21,20 @@ fn main() {
     }
 }
 ```
+
+[DYON-API](./DYON-API.md) | [LICENSE-APACHE](./LICENSE-APACHE) | [LICENSE-MIT](LICENSE-MIT)
+
+### Dyon scripting
+
+To install the Piston runtime for Dyon, type the following in the Terminal:
+
+`cargo install piston_window --features="batteries" --example piston`
+
+To run scripts, type:
+
+`piston <my_game.dyon>`
+
+For extending the API with your own features, see the "piston_script" module.
 
 ### Example: Dyon
 
