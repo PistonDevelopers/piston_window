@@ -49,6 +49,8 @@ pub use image;
 #[cfg(feature = "batteries")]
 pub use kira;
 #[cfg(feature = "batteries")]
+pub use lyon;
+#[cfg(feature = "batteries")]
 pub use nalgebra;
 #[cfg(feature = "batteries")]
 pub use dyon_interactive;

@@ -108,6 +108,7 @@ With the Cargo feature "batteries" turned on:
 - [gltf](https://github.com/gltf-rs/gltf) for a popular and efficient 3D asset format for game engines
 - [image](https://github.com/image-rs/image) for reading and saving image formats
 - [kira](https://github.com/tesselode/kira) for Audio
+- [lyon](https://github.com/nical/lyon) for 2D path tessellation
 - [nalgebra](https://github.com/dimforge/nalgebra) for Linear Algebra
 - [piston-ai_behavior](https://github.com/pistondevelopers/ai_behavior.git) for AI behavior trees
 - [piston-button_controller](https://github.com/pistondevelopers/button_controller) for UI button logic
