@@ -164,6 +164,7 @@ fn load_module(file: &str, mut module: Module) -> Option<Module> {
     )) {
         return None;
     }
+    module.make_transitive();
 
     if error(load(file, &mut module)) {
         None
