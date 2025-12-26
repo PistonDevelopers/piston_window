@@ -56,6 +56,8 @@ pub use kira;
 pub use lyon;
 #[cfg(feature = "batteries")]
 pub use nalgebra;
+#[cfg(feature = "num")]
+pub use num;
 #[cfg(feature = "batteries")]
 pub use piston_meta;
 #[cfg(feature = "batteries")]
