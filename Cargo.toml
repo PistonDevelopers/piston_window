@@ -47,6 +47,7 @@ piston_meta = { version = "2.0.0", optional = true }
 piston2d-deform_grid = { version = "0.15.0", optional = true }
 piston2d-drag_controller = { version = "0.30.0", optional = true }
 piston2d-sprite = { version = "0.69.0", optional = true }
+puzzle_design = { version = "0.2.0", optional = true }
 rand = { version = "0.9.2", optional = true }
 rapier2d = { version = "0.31.0", optional = true }
 rapier3d = { version = "0.31.0", optional = true }
@@ -91,6 +92,7 @@ batteries = [
   "piston2d-deform_grid",
   "piston2d-drag_controller",
   "piston2d-sprite",
+  "puzzle_design",
   "rand",
   "rapier2d",
   "rapier3d",

@@ -120,6 +120,7 @@ as window back-end
 - [piston2d-deform_grid](https://github.com/PistonDevelopers/deform_grid) for deforming textures in 2D
 - [piston2d-drag_controller](https://github.com/PistonDevelopers/drag_controller) for mouse drag logic
 - [piston2d-sprite](https://github.com/pistondevelopers/sprite.git) for 2D sprite animation
+- [puzzle_design](https://github.com/advancedresearch/puzzle_design) for generic puzzle design and problem solving
 - [rand](https://github.com/rust-random/rand) for generating random numbers
 - [rapier2d](https://github.com/dimforge/rapier) for 2D physics
 - [rapier3d](https://github.com/dimforge/rapier) for 3D physics
