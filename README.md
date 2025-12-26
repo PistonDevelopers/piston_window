@@ -100,12 +100,14 @@ for 2D rendering
 With the Cargo feature "batteries" turned on:
 
 - A "piston_script" module for Dyon scripting with the Piston game engine
-- [bevy](https://github.com/bevyengine/bevy) for Entity-Component-System (ECS) paradigm
+- [advancedresearch-nano_ecs](https://github.com/advancedresearch/nano_ecs.git) for bare-bones ECS  
+(see [hecs](https://github.com/Ralith/hecs) below for a safer and more flexible alternative)
 - [camera_controllers](https://github.com/PistonDevelopers/camera_controllers.git) for 3D camera
 - [collada](https://github.com/PistonDevelopers/piston_collada) for a popular 3D asset format
 - [dyon](https://github.com/pistondevelopers/dyon.git) for scripting
 - [find_folder](https://github.com/pistondevelopers/find_folder) for searching for a folder from current directory
 - [gltf](https://github.com/gltf-rs/gltf) for a popular and efficient 3D asset format for game engines
+- [hecs](https://github.com/Ralith/hecs) for ECS paradigm
 - [image](https://github.com/image-rs/image) for reading and saving image formats
 - [kira](https://github.com/tesselode/kira) for Audio
 - [lyon](https://github.com/nical/lyon) for 2D path tessellation

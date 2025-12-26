@@ -23,9 +23,9 @@ pub use wgpu_graphics;
 
 // Reexport commonly used libraries.
 #[cfg(feature = "batteries")]
-pub use ai_behavior;
+pub use nano_ecs;
 #[cfg(feature = "batteries")]
-pub use bevy;
+pub use ai_behavior;
 #[cfg(feature = "batteries")]
 pub use button_controller;
 #[cfg(feature = "batteries")]
@@ -44,6 +44,8 @@ pub use dyon;
 pub use find_folder;
 #[cfg(feature = "batteries")]
 pub use gltf;
+#[cfg(feature = "batteries")]
+pub use hecs;
 #[cfg(feature = "batteries")]
 pub use image;
 #[cfg(feature = "batteries")]

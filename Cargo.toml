@@ -29,13 +29,14 @@ pistoncore-winit_window = "0.20.2"
 wgpu = "27.0.1"
 
 # Batteries
-bevy = { version = "0.17.3", optional = true, default-features = false }
+advancedresearch-nano_ecs = { version = "0.9.0", optional = true }
 camera_controllers = { version = "0.36.0", optional = true }
 collada = { version = "0.17.0", optional = true }
 current = { version = "1.0.1", optional = true }
 dyon = { version = "0.51.0", optional = true }
 find_folder = { version = "0.3.0", optional = true }
 gltf = { version = "1.4.1", optional = true }
+hecs = { version = "0.10.5", optional = true }
 kira = { version = "0.11.0", optional = true }
 lyon = { version = "1.0.16", optional = true }
 nalgebra = { version = "0.34.1", optional = true, default-features = false }
@@ -71,7 +72,7 @@ features = ["png"]
 [features]
 default = []
 batteries = [
-  "bevy",
+  "advancedresearch-nano_ecs",
   "piston-button_controller",
   "camera_controllers",
   "collada",
@@ -79,6 +80,7 @@ batteries = [
   "dyon",
   "find_folder",
   "gltf",
+  "hecs",
   "image",
   "kira",
   "lyon",
@@ -102,8 +104,6 @@ batteries = [
 ]
 full = [
   "batteries",
-  # Bevy is currently broken, see https://github.com/bevyengine/bevy/issues/22127.
-  # "bevy/default",
   "image/default",
   "nalgebra/default",
   "texture_packer/common",
