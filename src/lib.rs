@@ -40,6 +40,8 @@ pub use deform_grid;
 pub use drag_controller;
 #[cfg(feature = "batteries")]
 pub use dyon;
+#[cfg(feature = "batteries")]
+pub use dyon_interactive;
 #[cfg(feature = "find_folder")]
 pub use find_folder;
 #[cfg(feature = "batteries")]
@@ -55,9 +57,9 @@ pub use lyon;
 #[cfg(feature = "batteries")]
 pub use nalgebra;
 #[cfg(feature = "batteries")]
-pub use dyon_interactive;
-#[cfg(feature = "batteries")]
 pub use piston_meta;
+#[cfg(feature = "batteries")]
+pub use puzzle_design;
 #[cfg(feature = "batteries")]
 pub use sprite;
 #[cfg(feature = "rand")]
