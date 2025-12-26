@@ -112,6 +112,7 @@ With the Cargo feature "batteries" turned on:
 - [kira](https://github.com/tesselode/kira) for Audio
 - [lyon](https://github.com/nical/lyon) for 2D path tessellation
 - [nalgebra](https://github.com/dimforge/nalgebra) for Linear Algebra
+- [num](https://github.com/rust-num/num) for numeric types and traits
 - [piston-ai_behavior](https://github.com/pistondevelopers/ai_behavior.git) for AI behavior trees
 - [piston-button_controller](https://github.com/pistondevelopers/button_controller) for UI button logic
 - [pistoncore-winit_window](https://github.com/pistondevelopers/winit_window)
