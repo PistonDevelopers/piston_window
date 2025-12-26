@@ -124,6 +124,7 @@ as window back-end
 - [rand](https://github.com/rust-random/rand) for generating random numbers
 - [rapier2d](https://github.com/dimforge/rapier) for 2D physics
 - [rapier3d](https://github.com/dimforge/rapier) for 3D physics
+- [rkyv](https://github.com/rkyv/rkyv) for zero-copy deserialization
 - [texture_packer](https://github.com/PistonDevelopers/texture_packer) for texture packing
 - [turbine_scene3d-wgpu](https://github.com/PistonDevelopers/turbine/tree/master/scene3d/backends/wgpu) for WGPU backend for Turbine-Scene3D
 - [turbine](https://github.com/PistonDevelopers/turbine) for 3D content production

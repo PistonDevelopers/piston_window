@@ -51,6 +51,7 @@ puzzle_design = { version = "0.2.0", optional = true }
 rand = { version = "0.9.2", optional = true }
 rapier2d = { version = "0.31.0", optional = true }
 rapier3d = { version = "0.31.0", optional = true }
+rkyv = { version = "0.8.12", optional = true }
 turbine = { version = "0.3.0", optional = true }
 turbine_scene3d-wgpu = { version = "0.3.0", optional = true }
 underscore_args = { version = "1.0.0", optional = true }
@@ -96,6 +97,7 @@ batteries = [
   "rand",
   "rapier2d",
   "rapier3d",
+  "rkyv",
   "texture_packer",
   "turbine",
   "turbine_scene3d-wgpu",
