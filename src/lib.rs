@@ -62,12 +62,14 @@ pub use piston_meta;
 pub use puzzle_design;
 #[cfg(feature = "batteries")]
 pub use sprite;
-#[cfg(feature = "rand")]
+#[cfg(feature = "batteries")]
 pub use rand;
 #[cfg(feature = "batteries")]
 pub use rapier2d;
 #[cfg(feature = "batteries")]
 pub use rapier3d;
+#[cfg(feature = "batteries")]
+pub use rkyv;
 #[cfg(feature = "batteries")]
 pub use texture_packer;
 #[cfg(feature = "batteries")]
