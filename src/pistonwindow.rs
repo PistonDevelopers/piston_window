@@ -62,14 +62,23 @@ impl PistonWindow {
     pub fn new(window: WinitWindow) -> Self {
         use wgpu::{PresentMode, SurfaceConfiguration, TextureFormat};
 
-        fn init_surface_config(window: &WinitWindow) -> SurfaceConfiguration {
+        fn init_surface_config(window: &WinitWindow, adapter: &wgpu::Adapter, surface: &wgpu::Surface) -> SurfaceConfiguration {
+            // Pick an alpha mode that the adapter/surface actually supports to avoid validation errors on some drivers.
+            let caps = surface.get_capabilities(&adapter);
+            let alpha_mode = if caps.alpha_modes.contains(&wgpu::CompositeAlphaMode::PostMultiplied) {
+                wgpu::CompositeAlphaMode::PostMultiplied
+            } else if caps.alpha_modes.contains(&wgpu::CompositeAlphaMode::PreMultiplied) {
+                wgpu::CompositeAlphaMode::PreMultiplied
+            } else {
+                wgpu::CompositeAlphaMode::Opaque
+            };
             SurfaceConfiguration {
                 usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
                 format: TextureFormat::Bgra8UnormSrgb,
                 width: window.draw_size().width as u32,
                 height: window.draw_size().height as u32,
                 present_mode: PresentMode::Fifo,
-                alpha_mode: wgpu::CompositeAlphaMode::PostMultiplied,
+                alpha_mode,
                 view_formats: vec![TextureFormat::Bgra8UnormSrgb],
                 desired_maximum_frame_latency: Default::default(),
             }
@@ -88,7 +97,7 @@ impl PistonWindow {
         let (device, queue) = futures::executor::block_on(
             adapter.request_device(&device_descriptor),
         ).unwrap();
-        let surface_config = init_surface_config(&window);
+        let surface_config = init_surface_config(&window, &adapter, &surface);
         surface.configure(&device, &surface_config);
         let device = Arc::new(device);
         let queue = Arc::new(queue);
