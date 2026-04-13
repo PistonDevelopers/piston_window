@@ -84,7 +84,7 @@ impl PistonWindow {
             }
         }
 
-        let instance = wgpu::Instance::new(&Default::default());
+        let instance = wgpu::Instance::new(wgpu::InstanceDescriptor::new_without_display_handle());
         let surface = instance.create_surface(window.get_window()).unwrap();
         let adapter =
             futures::executor::block_on(instance.request_adapter(&wgpu::RequestAdapterOptions {
@@ -171,22 +171,23 @@ impl PistonWindow {
         F: FnOnce(Context, &mut WgpuGraphics, &wgpu::Device) -> U,
     {
         if let Some(args) = e.render_args() {
-            let surface_texture = self.surface.get_current_texture().unwrap();
-            let surface_view = surface_texture.texture
-                .create_view(&wgpu::TextureViewDescriptor::default());
+            if let wgpu::CurrentSurfaceTexture::Success(surface_texture) =
+                self.surface.get_current_texture()
+            {
+                let surface_view = surface_texture.texture
+                    .create_view(&wgpu::TextureViewDescriptor::default());
 
-            let device = &self.device;
-            let (res, command_buffer) = self.g2d.draw(
-                &self.surface_config,
-                &surface_view,
-                args.viewport(),
-                |c, g| f(c, g, device));
-            self.queue.submit(std::iter::once(command_buffer));
-            surface_texture.present();
-            Some(res)
-        } else {
-            None
-        }
+                let device = &self.device;
+                let (res, command_buffer) = self.g2d.draw(
+                    &self.surface_config,
+                    &surface_view,
+                    args.viewport(),
+                    |c, g| f(c, g, device));
+                self.queue.submit(std::iter::once(command_buffer));
+                surface_texture.present();
+                Some(res)
+            } else {None}
+        } else {None}
     }
 
     /// Renders 3D graphics.
